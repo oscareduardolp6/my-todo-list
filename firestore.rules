@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // --- Hilo (sin cambios): un documento por usuario con todo el blob. ---
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // --- Tareas: todo cuelga de `todo/{uid}` (tasks, projects, meta). ---
+    // Como el proyecto de Firebase se comparte con Hilo, estas reglas son la
+    // unión de las dos apps: publicarlas NO rompe a Hilo, pero publicar solo
+    // las de Hilo sí dejaría esta app sin acceso.
+    match /todo/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}
