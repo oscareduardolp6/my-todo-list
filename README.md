@@ -48,7 +48,15 @@ npm run dev
 
 ### Publicar
 
-Es un sitio estático (`dist/`). Si lo sirves bajo un subpath (p. ej. GitHub Pages), compila con `VITE_BASE=/nombre-repo/ npm run build`. Para instalarla como PWA hace falta servirla por HTTPS.
+Cada push a `main` corre tests, compila y despliega a GitHub Pages ([workflow](.github/workflows/deploy-pages.yml)): https://oscarlp6.dev/my-todo-list/
+
+- La config de Firebase sale de los secretos `VITE_FIREBASE_*` del repo.
+- El build usa `VITE_BASE=/<nombre-del-repo>/`; en local la base es `/`.
+- `oscarlp6.dev` ya está en los dominios autorizados de Firebase Auth (por Hilo), así que el login con Google funciona.
+
+### Instalar en el teléfono
+
+Abre https://oscarlp6.dev/my-todo-list/ en Chrome (Android) y elige *Instalar app* / *Agregar a pantalla de principal*; en iPhone, Safari → Compartir → *Agregar a pantalla de inicio*. Después de la primera visita abre sin conexión.
 
 ## Arquitectura
 
