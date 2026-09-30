@@ -24,6 +24,56 @@ describe('app (integración, repos en memoria)', () => {
     expect(taskRepository.snapshot()[0]).toMatchObject({ completedAt: null, completedOn: null });
   });
 
+  it('completar una recurrente la avanza, archiva la ocurrencia y Deshacer no deja duplicados', async () => {
+    const user = userEvent.setup();
+    const { taskRepository } = renderApp({
+      tasks: [
+        makeTask({
+          id: 'r',
+          title: 'Sacar basura',
+          scheduledFor: TEST_TODAY,
+          recurrence: { frequency: 'weekly', interval: 1, weekdays: [], mode: 'fixed' },
+        }),
+      ],
+    });
+
+    await user.click(await screen.findByRole('checkbox', { name: /Completar: Sacar basura/ }));
+
+    await waitFor(() => expect(taskRepository.snapshot()).toHaveLength(2));
+    const byId = Object.fromEntries(taskRepository.snapshot().map((t) => [t.id, t]));
+    expect(byId.r).toMatchObject({ scheduledFor: '2026-10-06', completedAt: null, recurrence: { frequency: 'weekly' } });
+    expect(byId[`r_${TEST_TODAY}`]).toMatchObject({ completedOn: TEST_TODAY, scheduledFor: TEST_TODAY, recurrence: null });
+    expect(screen.queryByText('Sacar basura')).not.toBeInTheDocument();
+
+    await user.click(within(screen.getByRole('status')).getByRole('button', { name: 'Deshacer' }));
+
+    await waitFor(() => expect(taskRepository.snapshot()).toHaveLength(1));
+    expect(taskRepository.snapshot()[0]).toMatchObject({ id: 'r', scheduledFor: TEST_TODAY, completedAt: null });
+    expect(await screen.findByText('Sacar basura')).toBeInTheDocument();
+  });
+
+  it('crea una tarea recurrente desde el formulario y exige fecha agendada', async () => {
+    const user = userEvent.setup();
+    const { taskRepository } = renderApp();
+
+    await user.click((await screen.findAllByRole('button', { name: /Añadir tarea/ }))[0] as HTMLElement);
+    const form = within(await screen.findByRole('dialog', { name: 'Nueva tarea' }));
+    await user.type(form.getByLabelText('Título'), 'Pagar renta');
+    await user.click(form.getByRole('button', { name: 'Sin fecha' }));
+    await user.selectOptions(form.getByLabelText('Repetir'), 'monthly');
+    expect(form.getByText('Una tarea recurrente necesita fecha agendada.')).toBeInTheDocument();
+    expect(form.getByRole('button', { name: 'Añadir tarea' })).toBeDisabled();
+
+    await user.click(form.getByRole('button', { name: 'Hoy' }));
+    await user.click(form.getByRole('button', { name: 'Añadir tarea' }));
+
+    await waitFor(() => expect(taskRepository.snapshot()).toHaveLength(1));
+    expect(taskRepository.snapshot()[0]).toMatchObject({
+      scheduledFor: TEST_TODAY,
+      recurrence: { frequency: 'monthly', interval: 1, weekdays: [], mode: 'fixed' },
+    });
+  });
+
   it('borrar una tarea también se puede deshacer', async () => {
     const user = userEvent.setup();
     const { taskRepository } = renderApp({ tasks: [makeTask({ id: 'a', title: 'Llamar', scheduledFor: TEST_TODAY })] });

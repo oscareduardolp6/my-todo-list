@@ -1,7 +1,8 @@
-import { CalendarDays, Flag, RotateCw } from 'lucide-react';
+import { CalendarDays, Flag, Repeat, RotateCw } from 'lucide-react';
 import { diffDays, formatRelative } from '../../../../shared/domain/dates';
 import type { DateKey } from '../../../../shared/domain/dates';
 import type { Project } from '../../../projects/domain/project';
+import { describeRecurrence } from '../../domain/recurrence';
 import { PRIORITY_LABELS, isCompleted } from '../../domain/task';
 import type { Priority, Task } from '../../domain/task';
 
@@ -72,6 +73,11 @@ export function TaskRow({ task, today, project, hideScheduled, onToggle, onOpen 
             <span className={`inline-flex items-center gap-1 ${done ? 'text-faint' : dueTone(task.scheduledFor, today)}`}>
               <CalendarDays size={12} />
               {formatRelative(task.scheduledFor, today)}
+            </span>
+          )}
+          {task.recurrence && (
+            <span title={describeRecurrence(task.recurrence)} className="inline-flex items-center gap-1 text-faint">
+              <Repeat size={12} aria-label="Se repite" />
             </span>
           )}
           {task.deadline && (

@@ -9,6 +9,7 @@ export const makeTask = (overrides: Partial<Task> = {}): Task => ({
   projectId: 'inbox',
   scheduledFor: null,
   deadline: null,
+  recurrence: null,
   rescheduleCount: 0,
   completedAt: null,
   completedOn: null,

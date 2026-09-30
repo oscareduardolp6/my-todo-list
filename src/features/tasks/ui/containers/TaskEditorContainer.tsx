@@ -16,6 +16,7 @@ export function TaskEditorContainer() {
   const createTask = useAppStore((s) => s.createTask);
   const editTask = useAppStore((s) => s.editTask);
   const removeTask = useAppStore((s) => s.removeTask);
+  const skipTask = useAppStore((s) => s.skipTask);
   const allProjects = useMemo(() => withInbox(projects), [projects]);
 
   if (!editor) return null;
@@ -40,6 +41,14 @@ export function TaskEditorContainer() {
         weekStartsOn={weekStartsOn}
         onSubmit={submit}
         onCancel={close}
+        onSkip={
+          task
+            ? () => {
+                skipTask(task);
+                close();
+              }
+            : undefined
+        }
         onDelete={
           task
             ? () => {

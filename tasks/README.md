@@ -6,7 +6,7 @@ Ideas y funcionalidades que queremos agregar a la app, una por archivo. No es un
 
 | Task | Prioridad | Status |
 | --- | --- | --- |
-| [Tareas recurrentes](tareas-recurrentes.md) | 1 | Pendiente |
+| [Tareas recurrentes](tareas-recurrentes.md) | 1 | Implementada |
 | [Subtareas](subtareas.md) | 2 | Pendiente |
 
 ## Formato

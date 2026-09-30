@@ -13,6 +13,7 @@ import { db } from '../../../shared/infrastructure/firebase';
 import { userCollection, userDoc } from '../../../shared/infrastructure/firestore-collection';
 import { asNullableNumber, asNumber, asString } from '../../../shared/infrastructure/firestore-parse';
 import { INBOX_ID } from '../../projects/domain/project';
+import { parseRecurrence } from '../domain/recurrence';
 import { isPriority } from '../domain/task';
 import type { Task } from '../domain/task';
 import type { TaskRepository } from '../domain/ports';
@@ -31,6 +32,7 @@ export const taskFromDoc = (id: string, data: DocumentData): Task => {
     projectId: asString(data.projectId, INBOX_ID),
     scheduledFor: dateOrNull(data.scheduledFor),
     deadline: dateOrNull(data.deadline),
+    recurrence: parseRecurrence(data.recurrence),
     rescheduleCount: asNumber(data.rescheduleCount),
     completedAt,
     completedOn: completedAt === null ? null : dateOrNull(data.completedOn),

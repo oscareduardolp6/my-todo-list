@@ -31,6 +31,18 @@ export const addDays = (key: DateKey, n: number): DateKey => {
   return toDateKey(d.getTime());
 };
 
+/** Suma meses a partir de `anchor` conservando su día del mes; si el mes destino
+ *  es más corto cae en su último día (31 ene + 1 mes = 28/29 feb). Siempre se
+ *  calcula desde el ancla, así 31 ene → 28 feb → 31 mar no se va corriendo. */
+export const addMonths = (anchor: DateKey, n: number): DateKey => {
+  const [y = 1970, m = 1, d = 1] = anchor.split('-').map(Number);
+  const total = y * 12 + (m - 1) + n;
+  const year = Math.floor(total / 12);
+  const month = total - year * 12;
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  return toDateKey(new Date(year, month, Math.min(d, lastDay)).getTime());
+};
+
 /** Días de `a` a `b` (positivo si `b` es posterior). */
 export const diffDays = (a: DateKey, b: DateKey): number =>
   Math.round((parseDateKey(b).getTime() - parseDateKey(a).getTime()) / 86_400_000);

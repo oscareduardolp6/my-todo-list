@@ -1,8 +1,8 @@
 ---
-status: pendiente
+status: implementada
 priority: 1
 created: 2026-09-29
-implemented:
+implemented: 2026-09-29
 plan:
 ---
 
@@ -41,12 +41,12 @@ Hay pendientes que se repiten toda la vida (pagar la renta, sacar la basura, rev
 
 ## Criterios de aceptación
 
-- [ ] Cuando completo una tarea "cada lunes" agendada para el lunes 5, entonces aparece agendada para el lunes 12 y la del 5 queda en el reporte del día en que la completé.
-- [ ] Cuando completo una tarea "3 días después de completar" un jueves, entonces la siguiente queda para el domingo, sin importar la fecha agendada original.
-- [ ] Cuando completo una recurrente con la fecha atrasada (agendada hace 2 semanas), entonces la siguiente es la próxima fecha **futura** de la serie, no una también atrasada.
-- [ ] Cuando doy Deshacer al completarla, entonces la tarea vuelve a su fecha original y desaparece la siguiente ocurrencia (sin duplicados).
-- [ ] Si la recurrente tiene fecha límite, la siguiente conserva la misma distancia entre agendada y límite.
-- [ ] Completar la misma recurrente desde dos dispositivos casi a la vez no deja ocurrencias duplicadas.
+- [x] Cuando completo una tarea "cada lunes" agendada para el lunes 5, entonces aparece agendada para el lunes 12 y la del 5 queda en el reporte del día en que la completé.
+- [x] Cuando completo una tarea "3 días después de completar" un jueves, entonces la siguiente queda para el domingo, sin importar la fecha agendada original.
+- [x] Cuando completo una recurrente con la fecha atrasada (agendada hace 2 semanas), entonces la siguiente es la próxima fecha **futura** de la serie, no una también atrasada.
+- [x] Cuando doy Deshacer al completarla, entonces la tarea vuelve a su fecha original y desaparece la siguiente ocurrencia (sin duplicados).
+- [x] Si la recurrente tiene fecha límite, la siguiente conserva la misma distancia entre agendada y límite.
+- [x] Completar la misma recurrente desde dos dispositivos casi a la vez no deja ocurrencias duplicadas.
 
 ## Impacto en la arquitectura
 
@@ -56,10 +56,11 @@ Hay pendientes que se repiten toda la vida (pagar la renta, sacar la basura, rev
 - **Firestore:** campo nuevo en `tasks/{id}`; `taskFromDoc` debe tolerar documentos sin él. Sin cambios a `firestore.rules`.
 - **UI:** selector de repetición en `TaskForm`, ícono en `TaskRow`, ajuste del texto del toast.
 
-## Dudas abiertas
+## Decisiones tomadas
 
-- **¿Avanzar la misma tarea o crear una nueva por ocurrencia?** Avanzar mantiene un solo documento (y descripción y demás continúan); crear una nueva hace trivial el historial. Recomendación inicial: la tarea avanza y la completada se archiva como copia, pero hay que validarlo contra el Deshacer y la concurrencia.
-- **Concurrencia entre dispositivos:** dos completados simultáneos deberían converger a una sola ocurrencia siguiente. Quizá un id determinista de la ocurrencia (serie + fecha) o una transacción de Firestore.
-- ¿`rescheduleCount` se reinicia con cada ocurrencia? Probablemente sí.
-- ¿Qué pasa con "cada mes el día 31" en meses de 30 días? Definir la regla (último día del mes).
-- ¿Editar una recurrente cambia solo esta ocurrencia o toda la serie?
+- **La misma tarea avanza** y cada ocurrencia cerrada se archiva como copia ya completada (sin recurrencia) con id determinista `<idSerie>_<fechaAgendada>`. Se escriben juntas con `saveMany`. Los reportes no cambian: leen `completedOn`.
+- **Concurrencia:** dos dispositivos que completan la misma ocurrencia escriben el mismo documento-copia y calculan la misma siguiente fecha, así que convergen (no hay test con dos clientes reales).
+- **Deshacer** restaura el snapshot de la tarea y borra la copia de esa ocurrencia (`restoreTask(snapshot, alsoRemove)`).
+- **`rescheduleCount` se reinicia** en cada ocurrencia.
+- **Día 31 en meses cortos:** cae en el último día del mes, calculado siempre desde la fecha ancla (31 ene → 28 feb → 31 mar).
+- **Editar cambia toda la serie** (es un solo documento). "Omitir esta vez" salta la ocurrencia actual sin borrar la serie; "Eliminar" borra la serie completa; poner "No se repite" la termina conservando la tarea.
