@@ -8,6 +8,8 @@ Ideas y funcionalidades que queremos agregar a la app, una por archivo. No es un
 | --- | --- | --- |
 | [Tareas recurrentes](tareas-recurrentes.md) | 1 | Implementada |
 | [Subtareas](subtareas.md) | 2 | Pendiente |
+| [Gestos en las tareas](gestos.md) | 3 | Pendiente |
+| [Agrupar por prioridad](agrupar-por-prioridad.md) | 4 | Pendiente |
 
 ## Formato
 
