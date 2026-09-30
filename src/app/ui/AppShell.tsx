@@ -11,6 +11,7 @@ import { ToastStack } from '../../shared/ui/ToastStack';
 import { useRoute } from '../router';
 import type { Route } from '../router';
 import { useAppStore } from '../store-context';
+import { AddTaskFab } from './AddTaskFab';
 import { BottomNav } from './BottomNav';
 import { Sidebar } from './Sidebar';
 import { useApplyTheme } from './useApplyTheme';
@@ -54,6 +55,7 @@ export function AppShell() {
         </div>
       </main>
       <BottomNav route={route} />
+      <AddTaskFab route={route} />
       <TaskEditorContainer />
       <ProjectEditorContainer />
       <ToastStack toasts={toasts} onDismiss={dismissToast} />
