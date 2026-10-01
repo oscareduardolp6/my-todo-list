@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { navigate } from '../router';
 import type { Route } from '../router';
 import { useAppStore } from '../store-context';
@@ -19,6 +19,7 @@ export function Sidebar({ route }: { route: Route }) {
   const projects = useAppStore((s) => s.projects);
   const today = useAppStore((s) => s.today);
   const openProjectEditor = useAppStore((s) => s.openProjectEditor);
+  const openSearch = useAppStore((s) => s.openSearch);
 
   const counts = useMemo(() => countPendingByProject(tasks), [tasks]);
   const todayView = useMemo(() => getTodayView(tasks, today), [tasks, today]);
@@ -35,6 +36,11 @@ export function Sidebar({ route }: { route: Route }) {
 
   return (
     <aside className="hidden h-full w-64 shrink-0 flex-col gap-1 overflow-y-auto border-r border-border bg-surface p-3 lg:flex">
+      <button type="button" onClick={openSearch} className={`${linkClass(false)} mb-2`}>
+        <Search size={17} />
+        <span className="flex-1 text-left">Buscar</span>
+        <kbd className="rounded border border-border px-1.5 text-[10px] text-faint">/</kbd>
+      </button>
       {TIME_NAV.map((item) => renderNav(item, item.route.name === 'today' ? todayCount : undefined))}
 
       <div className="mb-1 mt-5 flex items-center justify-between px-3">

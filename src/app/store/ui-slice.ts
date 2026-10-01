@@ -30,6 +30,7 @@ export type UiSlice = {
   projectEditor: ProjectEditorState | null;
   /** Tarea cuyo selector de fecha (reagendar) está abierto. */
   rescheduleTaskId: string | null;
+  searchOpen: boolean;
   refreshToday: () => void;
   pushToast: (toast: Omit<Toast, 'id'>) => void;
   dismissToast: (id: string) => void;
@@ -39,6 +40,8 @@ export type UiSlice = {
   closeProjectEditor: () => void;
   openReschedule: (taskId: string) => void;
   closeReschedule: () => void;
+  openSearch: () => void;
+  closeSearch: () => void;
 };
 
 const MAX_TOASTS = 3;
@@ -51,6 +54,7 @@ export const createUiSlice =
     taskEditor: null,
     projectEditor: null,
     rescheduleTaskId: null,
+    searchOpen: false,
     refreshToday: () => {
       const today = toDateKey(deps.clock());
       if (today !== get().today) set({ today });
@@ -64,4 +68,6 @@ export const createUiSlice =
     closeProjectEditor: () => set({ projectEditor: null }),
     openReschedule: (rescheduleTaskId) => set({ rescheduleTaskId }),
     closeReschedule: () => set({ rescheduleTaskId: null }),
+    openSearch: () => set({ searchOpen: true }),
+    closeSearch: () => set({ searchOpen: false }),
   });

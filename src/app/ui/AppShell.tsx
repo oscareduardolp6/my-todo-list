@@ -4,6 +4,7 @@ import { ProjectsPage } from '../../features/projects/ui/containers/ProjectsPage
 import { ReportsPage } from '../../features/reports/ui/containers/ReportsPage';
 import { SettingsPage } from '../../features/settings/ui/containers/SettingsPage';
 import { RescheduleContainer } from '../../features/tasks/ui/containers/RescheduleContainer';
+import { SearchContainer } from '../../features/tasks/ui/containers/SearchContainer';
 import { TaskEditorContainer } from '../../features/tasks/ui/containers/TaskEditorContainer';
 import { TodayPage } from '../../features/views/ui/containers/TodayPage';
 import { UpcomingPage } from '../../features/views/ui/containers/UpcomingPage';
@@ -13,6 +14,7 @@ import { useRoute } from '../router';
 import type { Route } from '../router';
 import { useAppStore } from '../store-context';
 import { AddTaskFab } from './AddTaskFab';
+import { SearchFab } from './SearchFab';
 import { BottomNav } from './BottomNav';
 import { Sidebar } from './Sidebar';
 import { useApplyTheme } from './useApplyTheme';
@@ -56,9 +58,11 @@ export function AppShell() {
         </div>
       </main>
       <BottomNav route={route} />
+      <SearchFab />
       <AddTaskFab route={route} />
       <TaskEditorContainer />
       <RescheduleContainer />
+      <SearchContainer />
       <ProjectEditorContainer />
       <ToastStack toasts={toasts} onDismiss={dismissToast} />
     </div>

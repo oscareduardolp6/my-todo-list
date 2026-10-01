@@ -1,8 +1,8 @@
 ---
-status: pendiente
+status: implementada
 priority: 6
 created: 2026-09-30
-implemented:
+implemented: 2026-10-01
 plan:
 ---
 
@@ -49,7 +49,15 @@ Con muchas tareas repartidas entre Bandeja, proyectos y fechas, encontrar una en
 - `ui`: componente de campo + lista de resultados y un container que lee el store; el texto de búsqueda es estado de UI (no va a Firestore).
 - Sin cambios al modelo de datos ni a `firestore.rules`.
 
-## Dudas abiertas
+## Decisiones tomadas al implementar
+
+- **Modal (hoja "Buscar"), no ruta propia.** Se abre con `/` (si no estás escribiendo en un campo), `Ctrl/Cmd+K`, el botón "Buscar" del sidebar (escritorio) o un botón flotante (móvil).
+- **Orden:** primero las que coinciden en el título, luego las que solo coinciden en la descripción; dentro de cada grupo, pendientes antes que completadas y luego el orden de siempre (prioridad, fecha, antigüedad). Varias palabras = todas deben aparecer, en cualquier orden.
+- **Solo tareas**, no proyectos. Muestra hasta 50 resultados con el total; con filtrado en memoria no hizo falta índice.
+- Coincidencias resaltadas; las completadas se marcan. Tocar un resultado (o Enter, que abre el primero) abre la tarea en el editor.
+- Lógica pura en `tasks/domain/search.ts`; el estado abierto/cerrado vive en el slice de UI, el texto de búsqueda en el componente.
+
+## Dudas abiertas (resueltas)
 
 - ¿Pantalla/ruta propia o paleta tipo modal (`Ctrl+K`)?
 - ¿Orden de resultados: relevancia (título antes que descripción), fecha o pendientes primero?
