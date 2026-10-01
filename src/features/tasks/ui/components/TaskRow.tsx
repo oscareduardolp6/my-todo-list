@@ -5,6 +5,7 @@ import type { Project } from '../../../projects/domain/project';
 import { describeRecurrence } from '../../domain/recurrence';
 import { PRIORITY_LABELS, isCompleted } from '../../domain/task';
 import type { Priority, Task } from '../../domain/task';
+import { SwipeableRow } from './SwipeableRow';
 
 const PRIORITY_COLOR: Record<Priority, string> = {
   1: 'border-p1 text-p1',
@@ -57,13 +58,15 @@ export type TaskRowProps = {
   hideScheduled?: boolean;
   onToggle: () => void;
   onOpen: () => void;
+  /** Si se pasa, la fila se desliza: derecha completa (`onToggle`), izquierda llama a esto. */
+  onReschedule?: () => void;
 };
 
-export function TaskRow({ task, today, project, hideScheduled, onToggle, onOpen }: TaskRowProps) {
+export function TaskRow({ task, today, project, hideScheduled, onToggle, onOpen, onReschedule }: TaskRowProps) {
   const done = isCompleted(task);
   const showScheduled = task.scheduledFor !== null && !hideScheduled;
-  return (
-    <li className="group flex gap-3 border-b border-border px-1 py-3">
+  const content = (
+    <>
       <TaskCheckbox checked={done} priority={task.priority} title={task.title} onToggle={onToggle} />
       <button type="button" onClick={onOpen} className="min-w-0 flex-1 text-left">
         <p className={`text-[15px] leading-snug ${done ? 'text-faint line-through' : ''}`}>{task.title}</p>
@@ -103,6 +106,14 @@ export function TaskRow({ task, today, project, hideScheduled, onToggle, onOpen 
           )}
         </div>
       </button>
-    </li>
+    </>
+  );
+
+  if (!onReschedule) return <li className="group flex gap-3 border-b border-border px-1 py-3">{content}</li>;
+  // Una tarea hecha no se reagenda: ese lado del gesto no existe.
+  return (
+    <SwipeableRow done={done} onComplete={onToggle} onReschedule={done ? undefined : onReschedule}>
+      {content}
+    </SwipeableRow>
   );
 }

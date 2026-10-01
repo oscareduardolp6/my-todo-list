@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { CalendarDays, Flag, Repeat, RotateCw, SkipForward, Trash2, X } from 'lucide-react';
-import { addDays, formatShort, nextSaturday, startOfNextWeek } from '../../../../shared/domain/dates';
+import { addDays, formatShort } from '../../../../shared/domain/dates';
 import type { DateKey, WeekStart } from '../../../../shared/domain/dates';
 import type { Project } from '../../../projects/domain/project';
+import { quickDates } from '../../domain/quick-dates';
 import { MAX_INTERVAL } from '../../domain/recurrence';
 import type { Recurrence, RecurrenceFrequency, RecurrenceMode } from '../../domain/recurrence';
 import { PRIORITIES, PRIORITY_LABELS, isRecurring } from '../../domain/task';
@@ -101,13 +102,6 @@ export function TaskForm({ task, defaults, projects, today, weekStartsOn, onSubm
   const toggleWeekday = (day: number) =>
     setWeekdays((cur) => (cur.includes(day) ? cur.filter((d) => d !== day) : [...cur, day]));
 
-  const quickDates: { label: string; value: DateKey | null }[] = [
-    { label: 'Hoy', value: today },
-    { label: 'Mañana', value: addDays(today, 1) },
-    { label: 'Fin de semana', value: nextSaturday(today) },
-    { label: 'Próx. semana', value: startOfNextWeek(today, weekStartsOn) },
-    { label: 'Sin fecha', value: null },
-  ];
 
   const lateForDeadline = scheduledFor !== null && deadline !== null && scheduledFor > deadline;
 
@@ -176,7 +170,7 @@ export function TaskForm({ task, defaults, projects, today, weekStartsOn, onSubm
       <div>
         <Label>Agendada para</Label>
         <div className="mb-2 flex flex-wrap gap-1.5">
-          {quickDates.map((q) => (
+          {quickDates(today, weekStartsOn).map((q) => (
             <Chip key={q.label} active={scheduledFor === q.value} onClick={() => setScheduledFor(q.value)}>
               {q.label}
             </Chip>

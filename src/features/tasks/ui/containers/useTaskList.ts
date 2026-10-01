@@ -17,6 +17,7 @@ export function useTaskList() {
   const weekStartsOn = useAppStore((s) => s.settings.weekStartsOn);
   const toggleTask = useAppStore((s) => s.toggleTask);
   const openTaskEditor = useAppStore((s) => s.openTaskEditor);
+  const openReschedule = useAppStore((s) => s.openReschedule);
 
   const projectsById = useMemo(() => new Map<string, Project>(withInbox(projects).map((p) => [p.id, p])), [projects]);
 
@@ -27,6 +28,7 @@ export function useTaskList() {
     weekStartsOn,
     projectsById,
     toggle: toggleTask,
+    reschedule: (task: Task) => openReschedule(task.id),
     open: (task: Task) => openTaskEditor({ mode: 'edit', taskId: task.id }),
     add: (defaults: Partial<NewTask> = {}) => openTaskEditor({ mode: 'new', defaults }),
   };

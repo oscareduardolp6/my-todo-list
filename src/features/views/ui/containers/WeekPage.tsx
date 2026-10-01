@@ -8,7 +8,7 @@ import { useTaskList } from '../../../tasks/ui/containers/useTaskList';
 import { getWeekView } from '../../application/build-views';
 
 export function WeekPage() {
-  const { tasks, today, weekStartsOn, projectsById, toggle, open, add } = useTaskList();
+  const { tasks, today, weekStartsOn, projectsById, toggle, reschedule, open, add } = useTaskList();
   const [offset, setOffset] = useState(0);
   const view = useMemo(() => getWeekView(tasks, today, weekStartsOn, offset), [tasks, today, weekStartsOn, offset]);
 
@@ -38,7 +38,7 @@ export function WeekPage() {
       {view.overdue.length > 0 && (
         <TaskSection title="Atrasadas" count={view.overdue.length} tone="danger">
           {view.overdue.map((t) => (
-            <TaskRow key={t.id} task={t} today={today} project={projectsById.get(t.projectId)} onToggle={() => toggle(t)} onOpen={() => open(t)} />
+            <TaskRow key={t.id} task={t} today={today} project={projectsById.get(t.projectId)} onToggle={() => toggle(t)} onOpen={() => open(t)} onReschedule={() => reschedule(t)} />
           ))}
         </TaskSection>
       )}
@@ -59,7 +59,7 @@ export function WeekPage() {
           }
         >
           {day.tasks.map((t) => (
-            <TaskRow key={t.id} task={t} today={today} project={projectsById.get(t.projectId)} hideScheduled onToggle={() => toggle(t)} onOpen={() => open(t)} />
+            <TaskRow key={t.id} task={t} today={today} project={projectsById.get(t.projectId)} hideScheduled onToggle={() => toggle(t)} onOpen={() => open(t)} onReschedule={() => reschedule(t)} />
           ))}
           {!day.tasks.length && <li className="py-2 text-xs text-faint">Sin tareas</li>}
         </TaskSection>

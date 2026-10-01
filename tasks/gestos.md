@@ -1,8 +1,8 @@
 ---
-status: pendiente
+status: implementada
 priority: 3
 created: 2026-09-30
-implemented:
+implemented: 2026-10-01
 plan:
 ---
 
@@ -45,6 +45,15 @@ En el celular (la app es PWA) completar o reagendar una tarea obliga a apuntar a
 
 - Solo `ui`: un componente (p. ej. `shared/ui/swipeable`) que maneja pointer events y recibe callbacks por props; los containers de `tasks`/`views` lo conectan a las acciones del store existentes. Sin casos de uso ni modelo nuevos.
 - Tests de UI con `renderApp` simulando pointer events; la lógica del umbral/dirección conviene extraerla como función pura y probarla directo.
+
+## Decisiones tomadas al implementar
+
+- **Derecha = completar** (o reabrir si ya está hecha); **izquierda = reagendar**: al pasar el umbral (80 px) se abre una hoja con Hoy / Mañana / Fin de semana / Próx. semana / Sin fecha y un selector de calendario. Es el patrón de Todoist, sin acciones "reveladas" a medio camino.
+- Reagendar cambia solo `scheduledFor` (suma a `rescheduleCount`, no toca `deadline`) y deja toast con **Deshacer** (restaura el snapshot). A una recurrente no se le ofrece "Sin fecha"; una tarea hecha no se reagenda.
+- **Borrar no tiene gesto** (queda en el editor, con su Deshacer): con solo dos lados, se priorizó fecha y completar.
+- Implementación propia con eventos táctiles + `touch-action: pan-y` (sin dependencias); en escritorio no cambia nada. El click que llega tras un arrastre no abre la tarea.
+- Aplica en Hoy, Semana, Próximas y proyectos; no en Reportes. Lógica pura en `tasks/domain/swipe.ts`; los accesos rápidos de fecha se compartieron con el editor (`quick-dates.ts`).
+- **Pendiente:** alternativa sin gestos (teclado/botón) para reagendar, que cubre la tarea `reagendar-desde-lista`.
 
 ## Dudas abiertas
 

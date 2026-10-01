@@ -9,7 +9,7 @@ import { useTaskList } from '../../../tasks/ui/containers/useTaskList';
 import { getUpcomingView } from '../../application/build-views';
 
 export function UpcomingPage() {
-  const { tasks, loaded, today, projectsById, toggle, open } = useTaskList();
+  const { tasks, loaded, today, projectsById, toggle, reschedule, open } = useTaskList();
   const groups = useMemo(() => getUpcomingView(tasks, today), [tasks, today]);
 
   return (
@@ -18,7 +18,7 @@ export function UpcomingPage() {
       {groups.map((g) => (
         <TaskSection key={g.date} title={formatDayHeading(g.date, today)} count={g.tasks.length}>
           {g.tasks.map((t) => (
-            <TaskRow key={t.id} task={t} today={today} project={projectsById.get(t.projectId)} hideScheduled onToggle={() => toggle(t)} onOpen={() => open(t)} />
+            <TaskRow key={t.id} task={t} today={today} project={projectsById.get(t.projectId)} hideScheduled onToggle={() => toggle(t)} onOpen={() => open(t)} onReschedule={() => reschedule(t)} />
           ))}
         </TaskSection>
       ))}

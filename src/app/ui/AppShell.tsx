@@ -3,6 +3,7 @@ import { ProjectPage } from '../../features/projects/ui/containers/ProjectPage';
 import { ProjectsPage } from '../../features/projects/ui/containers/ProjectsPage';
 import { ReportsPage } from '../../features/reports/ui/containers/ReportsPage';
 import { SettingsPage } from '../../features/settings/ui/containers/SettingsPage';
+import { RescheduleContainer } from '../../features/tasks/ui/containers/RescheduleContainer';
 import { TaskEditorContainer } from '../../features/tasks/ui/containers/TaskEditorContainer';
 import { TodayPage } from '../../features/views/ui/containers/TodayPage';
 import { UpcomingPage } from '../../features/views/ui/containers/UpcomingPage';
@@ -57,6 +58,7 @@ export function AppShell() {
       <BottomNav route={route} />
       <AddTaskFab route={route} />
       <TaskEditorContainer />
+      <RescheduleContainer />
       <ProjectEditorContainer />
       <ToastStack toasts={toasts} onDismiss={dismissToast} />
     </div>

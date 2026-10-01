@@ -9,6 +9,7 @@
 
 import type { StateCreator } from 'zustand';
 import { formatShort } from '../../../shared/domain/dates';
+import type { DateKey } from '../../../shared/domain/dates';
 import type { Deps } from '../../../app/dependencies';
 import { runRTE } from '../../../app/run';
 import type { AppStore } from '../../../app/store';
@@ -26,6 +27,8 @@ import type { NewTask, Task, TaskPatch } from '../domain/task';
 export type TasksSlice = {
   createTask: (input: NewTask) => Promise<void>;
   editTask: (task: Task, patch: TaskPatch) => Promise<void>;
+  /** Cambia solo `scheduledFor` (`null` = sin fecha), con toast de deshacer. */
+  rescheduleTask: (task: Task, date: DateKey | null) => void;
   /** Completa (con toast de deshacer) o reabre, según el estado actual. */
   toggleTask: (task: Task) => void;
   removeTask: (task: Task) => void;
@@ -46,6 +49,17 @@ export const createTasksSlice =
 
     editTask: async (task, patch) => {
       settle<Task>(get)(await runRTE(updateTask(task, patch), deps));
+    },
+
+    rescheduleTask: (task, date) => {
+      if (date === task.scheduledFor) return;
+      // Optimista, como completar: el toast no espera al servidor.
+      get().pushToast({
+        message: date ? `Reagendada · ${formatShort(date, get().today)}` : 'Fecha quitada',
+        kind: 'info',
+        action: { label: 'Deshacer', run: () => get().restoreTask(task) },
+      });
+      void runRTE(updateTask(task, { scheduledFor: date }), deps).then(settle<Task>(get));
     },
 
     toggleTask: (task) => {
