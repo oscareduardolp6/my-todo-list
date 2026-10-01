@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Keyboard, Plus, Search } from 'lucide-react';
 import { navigate } from '../router';
 import type { Route } from '../router';
 import { useAppStore } from '../store-context';
@@ -20,6 +20,7 @@ export function Sidebar({ route }: { route: Route }) {
   const today = useAppStore((s) => s.today);
   const openProjectEditor = useAppStore((s) => s.openProjectEditor);
   const openSearch = useAppStore((s) => s.openSearch);
+  const openShortcuts = useAppStore((s) => s.openShortcuts);
 
   const counts = useMemo(() => countPendingByProject(tasks), [tasks]);
   const todayView = useMemo(() => getTodayView(tasks, today), [tasks, today]);
@@ -61,6 +62,11 @@ export function Sidebar({ route }: { route: Route }) {
       })}
 
       <div className="mt-auto flex flex-col gap-1 pt-4">
+        <button type="button" onClick={openShortcuts} className={linkClass(false)}>
+          <Keyboard size={17} />
+          <span className="flex-1 text-left">Atajos de teclado</span>
+          <kbd className="rounded border border-border px-1.5 text-[10px] text-faint">?</kbd>
+        </button>
         {renderNav(REPORTS_NAV)}
         {renderNav(SETTINGS_NAV)}
       </div>

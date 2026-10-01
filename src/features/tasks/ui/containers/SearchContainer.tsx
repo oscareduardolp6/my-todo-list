@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAppStore } from '../../../../app/store-context';
 import { Sheet } from '../../../../shared/ui/Sheet';
+import { isTyping } from '../../../../shared/ui/keyboard';
 import { withInbox } from '../../../projects/domain/project';
 import type { Project } from '../../../projects/domain/project';
 import { queryTokens, searchTasks } from '../../domain/search';
 import { SearchPanel } from '../components/SearchPanel';
 
 const MAX_RESULTS = 50;
-
-const isTyping = (el: EventTarget | null): boolean =>
-  el instanceof HTMLElement && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName));
 
 /** Búsqueda global. Siempre montada: escucha `/` y Ctrl/Cmd+K para abrirla y se
  *  pinta solo si está abierta. Tocar un resultado abre la tarea en el editor. */

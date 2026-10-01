@@ -16,6 +16,7 @@ import { useAppStore } from '../store-context';
 import { AddTaskFab } from './AddTaskFab';
 import { SearchFab } from './SearchFab';
 import { BottomNav } from './BottomNav';
+import { ShortcutsContainer } from './ShortcutsContainer';
 import { Sidebar } from './Sidebar';
 import { useApplyTheme } from './useApplyTheme';
 
@@ -63,6 +64,7 @@ export function AppShell() {
       <TaskEditorContainer />
       <RescheduleContainer />
       <SearchContainer />
+      <ShortcutsContainer />
       <ProjectEditorContainer />
       <ToastStack toasts={toasts} onDismiss={dismissToast} />
     </div>
