@@ -21,10 +21,12 @@ export type Settings = {
   readonly accent: string;
   /** 1 = la semana empieza en lunes, 0 = en domingo. */
   readonly weekStartsOn: WeekStart;
+  /** Deja un espacio entre las tareas de distinta prioridad (urgente, alta, media, normal). */
+  readonly separateByPriority: boolean;
 };
 
 /** Oscuro por defecto. */
-export const DEFAULT_SETTINGS: Settings = { theme: 'dark', accent: 'violet', weekStartsOn: 1 };
+export const DEFAULT_SETTINGS: Settings = { theme: 'dark', accent: 'violet', weekStartsOn: 1, separateByPriority: false };
 
 export type SettingsPatch = Partial<Settings>;
 

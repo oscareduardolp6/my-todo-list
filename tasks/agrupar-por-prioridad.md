@@ -1,8 +1,8 @@
 ---
-status: pendiente
+status: implementada
 priority: 4
 created: 2026-09-30
-implemented:
+implemented: 2026-10-01
 plan:
 ---
 
@@ -47,7 +47,15 @@ La prioridad hoy solo influye en el orden dentro de la lista, pero no hay forma 
 - `settings`: nueva preferencia de agrupación (store + persistencia); sin cambios al modelo de tarea ni a `firestore.rules`.
 - `ui`: componente de sección colapsable y selector de agrupación.
 
-## Dudas abiertas
+## Decisiones tomadas al implementar
+
+- **Alcance reducido a lo que se pidió:** una opción en Ajustes ("Separar tareas por prioridad": No separar / Separar, apagada por defecto) que deja un **pequeño espacio** entre urgentes, altas, medias y normales. **Sin encabezados, sin conteos y sin secciones colapsables**; esas ideas del documento original quedan fuera.
+- Aplica en Hoy, Semana (incluidas Atrasadas y cada día), Próximas y Pendientes de un proyecto. Las vistas ya ordenaban por prioridad; con la opción activa, **Atrasadas** también se ordena por prioridad (antes iba por fecha) y conserva el orden de antes dentro de cada prioridad.
+- No aplica a Completadas de un proyecto ni a Reportes.
+- Preferencia **global y sincronizada** (documento de Ajustes en Firestore), no por lista.
+- Lógica pura en `tasks/domain/priority-groups.ts`; `useTaskList` expone `prioritized(...)` y `TaskRow` recibe `gapBefore`.
+
+## Dudas abiertas (resueltas)
 
 - En Hoy/Semana/Próximas, ¿se agrupa por prioridad dentro de cada día o se reemplaza la agrupación por día?
 - ¿La preferencia es global o por lista/proyecto?

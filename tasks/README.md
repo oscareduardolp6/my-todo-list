@@ -9,7 +9,7 @@ Ideas y funcionalidades que queremos agregar a la app, una por archivo. No es un
 | [Tareas recurrentes](tareas-recurrentes.md) | 1 | Implementada |
 | [Subtareas](subtareas.md) | 2 | Pendiente |
 | [Gestos en las tareas](gestos.md) | 3 | Implementada |
-| [Agrupar por prioridad](agrupar-por-prioridad.md) | 4 | Pendiente |
+| [Agrupar por prioridad](agrupar-por-prioridad.md) | 4 | Implementada |
 | [Respaldo de datos en archivo](respaldo-en-archivo.md) | 5 | Implementada |
 | [Búsqueda de tareas](busqueda.md) | 6 | Implementada |
 | [Reagendar desde la vista de lista](reagendar-desde-lista.md) | 7 | Implementada |

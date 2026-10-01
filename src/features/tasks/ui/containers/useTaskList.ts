@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { useAppStore } from '../../../../app/store-context';
 import { withInbox } from '../../../projects/domain/project';
 import type { Project } from '../../../projects/domain/project';
+import { prioritized } from '../../domain/priority-groups';
 import type { NewTask, Task } from '../../domain/task';
 
 export function useTaskList() {
@@ -14,6 +15,7 @@ export function useTaskList() {
   const projects = useAppStore((s) => s.projects);
   const loaded = useAppStore((s) => s.loaded.tasks);
   const today = useAppStore((s) => s.today);
+  const separate = useAppStore((s) => s.settings.separateByPriority);
   const weekStartsOn = useAppStore((s) => s.settings.weekStartsOn);
   const toggleTask = useAppStore((s) => s.toggleTask);
   const openTaskEditor = useAppStore((s) => s.openTaskEditor);
@@ -27,6 +29,8 @@ export function useTaskList() {
     today,
     weekStartsOn,
     projectsById,
+    /** Ordena y marca los espacios entre prioridades si el ajuste está activo. */
+    prioritized: (list: readonly Task[]) => prioritized(list, separate),
     toggle: toggleTask,
     reschedule: (task: Task) => openReschedule(task.id),
     open: (task: Task) => openTaskEditor({ mode: 'edit', taskId: task.id }),

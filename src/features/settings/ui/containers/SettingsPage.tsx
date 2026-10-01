@@ -76,6 +76,17 @@ export function SettingsPage() {
         </div>
       </Group>
 
+      <Group title="Separar tareas por prioridad">
+        <div className="flex gap-2" role="radiogroup" aria-label="Separar tareas por prioridad">
+          {([[false, 'No separar'], [true, 'Separar']] as const).map(([value, label]) => (
+            <button key={label} type="button" role="radio" aria-checked={settings.separateByPriority === value} onClick={() => change({ separateByPriority: value })} className={segment(settings.separateByPriority === value)}>
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-faint">En las listas, deja un pequeño espacio entre urgentes, altas, medias y normales.</p>
+      </Group>
+
       <Group title="Respaldo">
         <BackupSection />
       </Group>

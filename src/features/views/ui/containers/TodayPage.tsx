@@ -9,7 +9,7 @@ import { useTaskList } from '../../../tasks/ui/containers/useTaskList';
 import { getTodayView } from '../../application/build-views';
 
 export function TodayPage() {
-  const { tasks, loaded, today, projectsById, toggle, reschedule, open, add } = useTaskList();
+  const { tasks, loaded, today, projectsById, prioritized, toggle, reschedule, open, add } = useTaskList();
   const view = useMemo(() => getTodayView(tasks, today), [tasks, today]);
   const empty = !view.overdue.length && !view.today.length;
 
@@ -18,15 +18,15 @@ export function TodayPage() {
       <PageHeader title="Hoy" subtitle={formatDayHeading(today, today).replace('Hoy · ', '')} />
       {view.overdue.length > 0 && (
         <TaskSection title="Atrasadas" count={view.overdue.length} tone="danger">
-          {view.overdue.map((t) => (
-            <TaskRow key={t.id} task={t} today={today} project={projectsById.get(t.projectId)} onToggle={() => toggle(t)} onOpen={() => open(t)} onReschedule={() => reschedule(t)} />
+          {prioritized(view.overdue).map(({ task: t, gap }) => (
+            <TaskRow key={t.id} gapBefore={gap} task={t} today={today} project={projectsById.get(t.projectId)} onToggle={() => toggle(t)} onOpen={() => open(t)} onReschedule={() => reschedule(t)} />
           ))}
         </TaskSection>
       )}
       {view.today.length > 0 && (
         <TaskSection title="Hoy" count={view.today.length}>
-          {view.today.map((t) => (
-            <TaskRow key={t.id} task={t} today={today} project={projectsById.get(t.projectId)} hideScheduled onToggle={() => toggle(t)} onOpen={() => open(t)} onReschedule={() => reschedule(t)} />
+          {prioritized(view.today).map(({ task: t, gap }) => (
+            <TaskRow key={t.id} gapBefore={gap} task={t} today={today} project={projectsById.get(t.projectId)} hideScheduled onToggle={() => toggle(t)} onOpen={() => open(t)} onReschedule={() => reschedule(t)} />
           ))}
         </TaskSection>
       )}

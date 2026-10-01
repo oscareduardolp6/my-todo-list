@@ -15,6 +15,7 @@ export const settingsFromDoc = (data: DocumentData | undefined): Settings =>
         theme: isTheme(data.theme) ? data.theme : DEFAULT_SETTINGS.theme,
         accent: asString(data.accent, DEFAULT_SETTINGS.accent),
         weekStartsOn: data.weekStartsOn === 0 ? 0 : 1,
+        separateByPriority: data.separateByPriority === true,
       }
     : DEFAULT_SETTINGS;
 

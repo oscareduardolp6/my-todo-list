@@ -7,6 +7,9 @@ import { PRIORITY_LABELS, isCompleted } from '../../domain/task';
 import type { Priority, Task } from '../../domain/task';
 import { SwipeableRow } from './SwipeableRow';
 
+/** Espacio entre grupos de prioridad. */
+const GAP = 'mt-5';
+
 const PRIORITY_COLOR: Record<Priority, string> = {
   1: 'border-p1 text-p1',
   2: 'border-p2 text-p2',
@@ -60,9 +63,11 @@ export type TaskRowProps = {
   onOpen: () => void;
   /** Si se pasa, la fila se desliza: derecha completa (`onToggle`), izquierda llama a esto. */
   onReschedule?: () => void;
+  /** Deja un espacio encima (cambio de prioridad respecto a la fila anterior). */
+  gapBefore?: boolean;
 };
 
-export function TaskRow({ task, today, project, hideScheduled, onToggle, onOpen, onReschedule }: TaskRowProps) {
+export function TaskRow({ task, today, project, hideScheduled, onToggle, onOpen, onReschedule, gapBefore }: TaskRowProps) {
   const done = isCompleted(task);
   const showScheduled = task.scheduledFor !== null && !hideScheduled;
   const content = (
@@ -121,10 +126,10 @@ export function TaskRow({ task, today, project, hideScheduled, onToggle, onOpen,
     </>
   );
 
-  if (!onReschedule) return <li className="group flex gap-3 border-b border-border px-1 py-3">{content}</li>;
+  if (!onReschedule) return <li className={`group flex gap-3 border-b border-border px-1 py-3 ${gapBefore ? GAP : ''}`}>{content}</li>;
   // Una tarea hecha no se reagenda: ese lado del gesto no existe.
   return (
-    <SwipeableRow done={done} onComplete={onToggle} onReschedule={done ? undefined : onReschedule}>
+    <SwipeableRow gapBefore={gapBefore} done={done} onComplete={onToggle} onReschedule={done ? undefined : onReschedule}>
       {content}
     </SwipeableRow>
   );

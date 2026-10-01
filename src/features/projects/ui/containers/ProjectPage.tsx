@@ -10,7 +10,7 @@ import { useTaskList } from '../../../tasks/ui/containers/useTaskList';
 import { INBOX_ID } from '../../domain/project';
 
 export function ProjectPage({ projectId }: { projectId: string }) {
-  const { tasks, loaded, today, projectsById, toggle, reschedule, open, add } = useTaskList();
+  const { tasks, loaded, today, projectsById, prioritized, toggle, reschedule, open, add } = useTaskList();
   const openProjectEditor = useAppStore((s) => s.openProjectEditor);
   const [showDone, setShowDone] = useState(false);
   const project = projectsById.get(projectId);
@@ -42,8 +42,8 @@ export function ProjectPage({ projectId }: { projectId: string }) {
         }
       />
       <TaskSection title="Pendientes" count={view.open.length}>
-        {view.open.map((t) => (
-          <TaskRow key={t.id} task={t} today={today} onToggle={() => toggle(t)} onOpen={() => open(t)} onReschedule={() => reschedule(t)} />
+        {prioritized(view.open).map(({ task: t, gap }) => (
+          <TaskRow key={t.id} gapBefore={gap} task={t} today={today} onToggle={() => toggle(t)} onOpen={() => open(t)} onReschedule={() => reschedule(t)} />
         ))}
         {!view.open.length && loaded && <li className="py-6 text-center text-sm text-muted">Nada pendiente aquí.</li>}
       </TaskSection>

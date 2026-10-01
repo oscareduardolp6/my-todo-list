@@ -10,6 +10,7 @@ export type SwipeableRowProps = {
   onReschedule?: () => void;
   /** La tarea ya está hecha: el gesto de la derecha la reabre. */
   done: boolean;
+  gapBefore?: boolean;
   children: ReactNode;
 };
 
@@ -18,7 +19,7 @@ type Gesture = { x: number; y: number; locked: boolean };
 /** Fila de lista (`<li>`) que se desliza como en Todoist: derecha completa,
  *  izquierda reagenda. Usa eventos táctiles, así que en escritorio no cambia
  *  nada; `touch-action: pan-y` deja el scroll vertical al navegador. */
-export function SwipeableRow({ onComplete, onReschedule, done, children }: SwipeableRowProps) {
+export function SwipeableRow({ onComplete, onReschedule, done, gapBefore, children }: SwipeableRowProps) {
   const [dx, setDx] = useState(0);
   const [dragging, setDragging] = useState(false);
   const gesture = useRef<Gesture | null>(null);
@@ -66,7 +67,7 @@ export function SwipeableRow({ onComplete, onReschedule, done, children }: Swipe
 
   return (
     <li
-      className="group relative overflow-hidden border-b border-border"
+      className={`group relative overflow-hidden border-b border-border ${gapBefore ? 'mt-5' : ''}`}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={() => finish(false)}
