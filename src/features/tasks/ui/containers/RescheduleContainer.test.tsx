@@ -62,3 +62,24 @@ describe('gestos en las tareas', () => {
     expect(within(sheet).getByRole('button', { name: /Mañana/ })).toBeInTheDocument();
   });
 });
+
+describe('reagendar desde el icono de la fila', () => {
+  it('el icono abre el selector y reagenda sin gestos', async () => {
+    const user = userEvent.setup();
+    const { taskRepository } = renderApp({ tasks: [makeTask({ id: 'a', title: 'Pagar luz', scheduledFor: TEST_TODAY })] });
+
+    await user.click(await screen.findByRole('button', { name: 'Reagendar: Pagar luz' }));
+    const sheet = await screen.findByRole('dialog', { name: 'Reagendar' });
+    await user.click(within(sheet).getByRole('button', { name: /Próx\. semana/ }));
+
+    await waitFor(() => expect(taskRepository.snapshot()[0]).toMatchObject({ scheduledFor: '2026-10-05', rescheduleCount: 1 }));
+  });
+
+  it('una tarea completada no ofrece reagendar', async () => {
+    const user = userEvent.setup();
+    renderApp({ tasks: [makeTask({ id: 'a', title: 'Hecha', completedAt: 1, completedOn: TEST_TODAY })] }, '#/proyecto/inbox');
+    await user.click(await screen.findByRole('button', { name: /Completadas/ }));
+    await screen.findByText('Hecha');
+    expect(screen.queryByRole('button', { name: /Reagendar/ })).toBeNull();
+  });
+});

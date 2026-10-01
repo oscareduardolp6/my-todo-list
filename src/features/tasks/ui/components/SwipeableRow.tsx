@@ -66,7 +66,7 @@ export function SwipeableRow({ onComplete, onReschedule, done, children }: Swipe
 
   return (
     <li
-      className="relative overflow-hidden border-b border-border"
+      className="group relative overflow-hidden border-b border-border"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={() => finish(false)}

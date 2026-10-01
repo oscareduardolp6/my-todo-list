@@ -1,4 +1,4 @@
-import { CalendarDays, Flag, Repeat, RotateCw } from 'lucide-react';
+import { CalendarClock, CalendarDays, Flag, Repeat, RotateCw } from 'lucide-react';
 import { diffDays, formatRelative } from '../../../../shared/domain/dates';
 import type { DateKey } from '../../../../shared/domain/dates';
 import type { Project } from '../../../projects/domain/project';
@@ -106,6 +106,18 @@ export function TaskRow({ task, today, project, hideScheduled, onToggle, onOpen,
           )}
         </div>
       </button>
+      {onReschedule && !done && (
+        // Alternativa a deslizar (que no existe con mouse): aparece al pasar el cursor o enfocar la fila.
+        <button
+          type="button"
+          onClick={onReschedule}
+          aria-label={`Reagendar: ${task.title}`}
+          title="Reagendar"
+          className="hidden h-8 w-8 shrink-0 items-center justify-center self-start rounded-lg text-faint opacity-0 hover:bg-surface-2 hover:text-text focus-visible:opacity-100 group-hover:opacity-100 lg:flex"
+        >
+          <CalendarClock size={16} />
+        </button>
+      )}
     </>
   );
 

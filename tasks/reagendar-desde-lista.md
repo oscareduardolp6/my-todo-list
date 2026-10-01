@@ -1,8 +1,8 @@
 ---
-status: pendiente
+status: implementada
 priority: 7
 created: 2026-10-01
-implemented:
+implemented: 2026-10-01
 plan:
 ---
 
@@ -49,6 +49,13 @@ Reagendar es una acción muy frecuente (lo que no se hizo hoy se pasa a mañana,
 - Casi todo `ui`: componente de menú de reagendado en `tasks/ui/components` (recibe props) y conexión en los containers de lista.
 - Sin caso de uso nuevo si el reagendado actual ya cubre cambiar solo `scheduledFor`; confirmar que cubre "quitar fecha". Cálculo de fechas rápidas (mañana, próximo lunes…) como función pura en `shared/domain/dates.ts`, probada directo, usando `DateKey`.
 - Sin cambios al modelo de datos ni a `firestore.rules`.
+
+## Decisiones tomadas al implementar
+
+- **Icono de calendario en la fila, solo en escritorio** (`lg`): aparece al pasar el cursor o al enfocarlo con teclado. En móvil no se muestra porque ya existe el gesto de deslizar a la izquierda.
+- Abre la misma hoja "Reagendar" que el gesto (Hoy / Mañana / Fin de semana / Próx. semana / Sin fecha + calendario), con el mismo toast de **Deshacer**; cambia solo `scheduledFor` y no toca `deadline`.
+- "Sin fecha" cuenta como reagendar (suma a `rescheduleCount`, regla existente de `patchTask`); no se ofrece en recurrentes. Las tareas completadas no muestran el icono.
+- Menú propio reutilizado del gesto (`ReschedulePicker`), no un popover anclado a la fila.
 
 ## Dudas abiertas
 
