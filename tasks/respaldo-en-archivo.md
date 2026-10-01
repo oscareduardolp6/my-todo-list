@@ -1,8 +1,8 @@
 ---
-status: pendiente
+status: implementada
 priority: 5
 created: 2026-09-30
-implemented:
+implemented: 2026-10-01
 plan:
 ---
 
@@ -49,7 +49,17 @@ Todo vive en Firestore, en un proyecto compartido con Hilo y sin servidor propio
 - `store`: acciones que corren los casos de uso con `runRTE`/`settle`, como el resto.
 - Sin cambios al modelo de tarea ni a `firestore.rules`.
 
-## Dudas abiertas
+## Decisiones tomadas al implementar
+
+- **Importar reemplaza todo:** lo que está en la app y no en el archivo se borra; lo del archivo se escribe con sus mismos ids. Primero se escribe y luego se borra, para que un fallo a medias nunca deje sin datos del respaldo. La confirmación avisa explícitamente que es destructivo.
+- **Solo tareas y proyectos:** las preferencias de Ajustes no entran. El formato lleva `app` y `version: 1` para poder ampliarlo.
+- **Lectura estricta:** un archivo con cualquier irregularidad (JSON roto, otra app, versión desconocida, tarea inválida, ids repetidos) se rechaza completo sin escribir nada. Excepciones deliberadas: el proyecto `inbox` se ignora y las tareas de un proyecto que no viene en el archivo pasan a la Bandeja.
+- **Sin recordatorio** de "hace tiempo que no respaldas" (idea futura).
+- `saveMany` de Firestore ahora parte en lotes de 500.
+- Offline: la restauración espera a Firestore como cualquier escritura; el toast "Respaldo restaurado" aparece al reconectar.
+- Código: `settings/domain/backup.ts`, `settings/application/{export,import}-backup.ts`, `shared/infrastructure/download-file.ts` (inyectado como `deps.downloadFile`) y `BackupSection` en Ajustes.
+
+## Dudas abiertas (resueltas)
 
 - Al importar: ¿reemplazar todo, mezclar por id (los del archivo ganan) o dejar elegir?
 - ¿Se conservan los ids originales? Importar con ids repetidos sobrescribe tareas existentes.

@@ -21,6 +21,7 @@ export const TEST_TODAY = '2026-09-29';
 
 export const createTestDeps = (seed: { tasks?: Task[]; projects?: Project[] } = {}) => {
   let n = 0;
+  const downloads: { filename: string; content: string }[] = [];
   const taskRepository = createInMemoryTaskRepository(seed.tasks);
   const projectRepository = createInMemoryProjectRepository(seed.projects);
   const settingsRepository = createInMemorySettingsRepository();
@@ -29,9 +30,10 @@ export const createTestDeps = (seed: { tasks?: Task[]; projects?: Project[] } = 
     projectRepository,
     settingsRepository,
     clock: () => noon(TEST_TODAY),
+    downloadFile: (filename, content) => void downloads.push({ filename, content }),
     idGenerator: (prefix = 'id') => `${prefix}_${++n}`,
   });
-  return { deps, taskRepository, projectRepository, settingsRepository };
+  return { deps, taskRepository, projectRepository, settingsRepository, downloads };
 };
 
 const auth = { user: { uid: 'u1', email: 'test@example.com', displayName: 'Test' }, signOut: () => undefined };

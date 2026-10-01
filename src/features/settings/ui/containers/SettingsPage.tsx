@@ -5,6 +5,7 @@ import { useAppStore } from '../../../../app/store-context';
 import { PageHeader } from '../../../../shared/ui/PageHeader';
 import { ACCENTS } from '../../domain/settings';
 import type { Theme } from '../../domain/settings';
+import { BackupSection } from './BackupSection';
 
 const THEMES: { id: Theme; label: string; icon: ReactNode }[] = [
   { id: 'dark', label: 'Oscuro', icon: <Moon size={16} /> },
@@ -73,6 +74,10 @@ export function SettingsPage() {
             </button>
           ))}
         </div>
+      </Group>
+
+      <Group title="Respaldo">
+        <BackupSection />
       </Group>
 
       <Group title="Cuenta">

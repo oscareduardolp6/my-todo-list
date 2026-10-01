@@ -19,6 +19,8 @@ import type { Task } from '../domain/task';
 import type { TaskRepository } from '../domain/ports';
 
 const COLLECTION = 'tasks';
+/** Firestore admite 500 escrituras por lote. */
+const BATCH_LIMIT = 500;
 
 const dateOrNull = (v: unknown) => (isDateKey(v) ? v : null);
 
@@ -49,10 +51,12 @@ export const firestoreTaskRepository: TaskRepository = {
       onError,
     ),
   save: (task) => setDoc(userDoc(COLLECTION, task.id), task),
-  saveMany: (tasks) => {
-    const batch = writeBatch(db());
-    for (const task of tasks) batch.set(userDoc(COLLECTION, task.id), task);
-    return batch.commit();
+  saveMany: async (tasks) => {
+    for (let i = 0; i < tasks.length; i += BATCH_LIMIT) {
+      const batch = writeBatch(db());
+      for (const task of tasks.slice(i, i + BATCH_LIMIT)) batch.set(userDoc(COLLECTION, task.id), task);
+      await batch.commit();
+    }
   },
   remove: (id) => deleteDoc(userDoc(COLLECTION, id)),
 };

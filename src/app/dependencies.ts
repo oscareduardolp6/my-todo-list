@@ -12,6 +12,7 @@ import type { TaskRepository } from '../features/tasks/domain/ports';
 import { uid } from '../shared/domain/ids';
 import type { AuthGateway, Clock, IdGenerator } from '../shared/domain/ports';
 import { browserAuthGateway } from '../shared/infrastructure/auth';
+import { downloadFile } from '../shared/infrastructure/download-file';
 
 export type Deps = {
   readonly taskRepository: TaskRepository;
@@ -23,6 +24,8 @@ export type Deps = {
   readonly clock: Clock;
   /** `uid` inyectado: vuelve deterministas los ids en test. */
   readonly idGenerator: IdGenerator;
+  /** Entrega un archivo de texto al usuario (el respaldo). Inyectable en test. */
+  readonly downloadFile: (filename: string, content: string) => void;
 };
 
 export const productionDeps: Deps = {
@@ -32,6 +35,7 @@ export const productionDeps: Deps = {
   authGateway: browserAuthGateway,
   clock: () => Date.now(),
   idGenerator: uid,
+  downloadFile,
 };
 
 /** Las de producción con lo que se le pase encima. Pensado para tests. */
