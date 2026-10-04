@@ -1,4 +1,4 @@
-import { Check, LogOut, Monitor, Moon, Sun } from 'lucide-react';
+import { Check, LogIn, LogOut, Monitor, Moon, Sun } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useAuth } from '../../../../app/auth-context';
 import { useAppStore } from '../../../../app/store-context';
@@ -31,7 +31,7 @@ const segment = (active: boolean) =>
 export function SettingsPage() {
   const settings = useAppStore((s) => s.settings);
   const change = useAppStore((s) => s.changeSettings);
-  const { user, signOut } = useAuth();
+  const { user, signIn, signOut } = useAuth();
 
   return (
     <div>
@@ -114,21 +114,41 @@ export function SettingsPage() {
         <BackupSection />
       </Group>
 
-      <Group title="Captura rápida (Raycast)">
-        <QuickCaptureSection />
-      </Group>
+      {user && (
+        <Group title="Captura rápida (Raycast)">
+          <QuickCaptureSection />
+        </Group>
+      )}
 
       <Group title="Cuenta">
         <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface p-4">
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">{user.displayName ?? 'Sesión iniciada'}</p>
-            {user.email && <p className="truncate text-xs text-muted">{user.email}</p>}
-          </div>
-          <button type="button" onClick={signOut} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted hover:bg-surface-2">
-            <LogOut size={15} /> Cerrar sesión
-          </button>
+          {user ? (
+            <>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">{user.displayName ?? 'Sesión iniciada'}</p>
+                {user.email && <p className="truncate text-xs text-muted">{user.email}</p>}
+              </div>
+              <button type="button" onClick={signOut} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted hover:bg-surface-2">
+                <LogOut size={15} /> Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="min-w-0">
+                <p className="text-sm font-medium">Modo demo</p>
+                <p className="text-xs text-muted">Sin cuenta</p>
+              </div>
+              <button type="button" onClick={signIn} className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted hover:bg-surface-2">
+                <LogIn size={15} /> Iniciar sesión con Google
+              </button>
+            </>
+          )}
         </div>
-        <p className="mt-2 text-xs text-faint">Tus tareas se sincronizan solas entre todos los dispositivos donde inicies sesión con esta cuenta.</p>
+        <p className="mt-2 text-xs text-faint">
+          {user
+            ? 'Tus tareas se sincronizan solas entre todos los dispositivos donde inicies sesión con esta cuenta.'
+            : 'Tus tareas se guardan solo en este navegador. Al iniciar sesión se sincronizan entre dispositivos (los datos del demo no se migran).'}
+        </p>
       </Group>
     </div>
   );

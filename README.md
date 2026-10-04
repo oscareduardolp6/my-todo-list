@@ -13,6 +13,7 @@ App personal de tareas para reemplazar Todoist. PWA (instalable, funciona sin co
 - **Reportes:** qué tareas resolviste qué día (7 días / 30 días / mes / rango libre), barras por día, promedio, desglose por proyecto y cuántas con fecha límite se cumplieron a tiempo.
 - **Ajustes:** tema (oscuro por defecto / claro / sistema), color de acento, inicio de semana.
 - **Sincronización** en tiempo real entre dispositivos (Firestore + login con Google) con caché offline.
+- **Modo demo:** quien abre la app sin sesión la usa de inmediato, con datos de ejemplo guardados solo en su navegador (`localStorage`); al iniciar sesión con Google pasa a Firestore.
 
 Una tarea "toca" el día de su fecha agendada; si no tiene, el de su fecha límite.
 

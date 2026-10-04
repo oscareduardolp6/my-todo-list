@@ -35,6 +35,7 @@ Reglas:
 - **La Bandeja de entrada es un proyecto virtual** (`INBOX`, id `inbox`): no se guarda ni se puede borrar. Borrar un proyecto reasigna sus tareas (incluidas las completadas) a la bandeja.
 - **Tema:** variables CSS en `src/index.css`; `data-theme` en `<html>`. Los colores de Tailwind son `var(--x)`, así que **las utilidades con opacidad (`bg-accent/60`) no funcionan**: usa `opacity-*`.
 - **`AuthGate` vive fuera del store** porque los repositorios necesitan el uid antes de que el store abra sus suscripciones.
+- **Sin sesión = modo demo, no pantalla de login.** `AuthGate` le entrega a `children` las `Deps` de Firestore (con sesión) o `createDemoDeps` (repos en `localStorage`, llaves `todo.demo.*`, datos de ejemplo de `app/demo-data.ts` solo la primera vez). Cada modo monta su propio store (`key` en el `Fragment`). Los datos del demo no se migran a la cuenta. `useAuth().user` es `null` en demo: la UI que exige cuenta (captura rápida) debe comprobarlo.
 - **`vitest.config.ts` es aparte de `vite.config.ts`** por un choque de tipos entre las dos copias de vite.
 
 ## Backlog de ideas (`tasks/`)

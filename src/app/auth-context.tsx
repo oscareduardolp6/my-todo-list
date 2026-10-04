@@ -2,15 +2,26 @@
 
    Los repositorios de Firestore necesitan el `uid` de la sesión, así que ésta
    debe resolverse ANTES de montar `AppStoreProvider` (que abre las
-   suscripciones); no puede ser un slice más. */
+   suscripciones); no puede ser un slice más.
 
-import { createContext, useContext, useEffect, useState } from 'react';
+   Sin sesión no hay pantalla de login: la app abre en modo demo, con
+   repositorios en `localStorage` (`createDemoDeps`). Al iniciar sesión se monta
+   otro store sobre Firestore; al cerrarla se vuelve al demo. */
+
+import { Fragment, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { AuthUser } from '../shared/domain/ports';
+import { createDemoDeps } from './dependencies';
 import type { Deps } from './dependencies';
-import { LoginScreen } from './ui/LoginScreen';
 
-export type AuthContextValue = { user: AuthUser; signOut: () => void };
+export type AuthContextValue = {
+  /** `null` = modo demo (sin cuenta, datos solo en este navegador). */
+  user: AuthUser | null;
+  signIn: () => void;
+  signOut: () => void;
+  /** Último fallo al iniciar sesión, para mostrarlo en el modo demo. */
+  signInError: string | null;
+};
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
@@ -32,9 +43,18 @@ function CenteredMessage({ children }: { children: ReactNode }) {
   return <div className="flex h-full items-center justify-center px-6 text-center text-sm text-muted">{children}</div>;
 }
 
-export function AuthGate({ deps, children }: { deps: Deps; children: ReactNode }) {
+export type AuthGateProps = {
+  deps: Deps;
+  /** Dependencias del modo demo; por defecto, las locales de `createDemoDeps`. */
+  demoDeps?: Deps;
+  /** Recibe las `Deps` que corresponden a la sesión (Firestore o demo). */
+  children: (deps: Deps) => ReactNode;
+};
+
+export function AuthGate({ deps, demoDeps, children }: AuthGateProps) {
   const [status, setStatus] = useState<Status>({ kind: 'resolving' });
   const [signInError, setSignInError] = useState<string | null>(null);
+  const demo = useMemo(() => demoDeps ?? createDemoDeps(deps), [demoDeps, deps]);
 
   useEffect(() => {
     try {
@@ -47,6 +67,19 @@ export function AuthGate({ deps, children }: { deps: Deps; children: ReactNode }
       return undefined;
     }
   }, [deps]);
+
+  const value = useMemo<AuthContextValue | null>(() => {
+    if (status.kind !== 'ready' && status.kind !== 'loggedOut') return null;
+    return {
+      user: status.kind === 'ready' ? status.user : null,
+      signIn: () => {
+        setSignInError(null);
+        deps.authGateway.signInWithGoogle().catch((e) => setSignInError(e instanceof Error ? e.message : String(e)));
+      },
+      signOut: () => void deps.authGateway.signOut(),
+      signInError,
+    };
+  }, [status, deps, signInError]);
 
   if (status.kind === 'resolving') return <CenteredMessage>Cargando…</CenteredMessage>;
 
@@ -64,21 +97,11 @@ export function AuthGate({ deps, children }: { deps: Deps; children: ReactNode }
     );
   }
 
-  if (status.kind === 'loggedOut') {
-    return (
-      <LoginScreen
-        error={signInError}
-        onSignIn={() => {
-          setSignInError(null);
-          deps.authGateway.signInWithGoogle().catch((e) => setSignInError(e instanceof Error ? e.message : String(e)));
-        }}
-      />
-    );
-  }
-
+  const account = status.kind === 'ready';
   return (
-    <AuthContext.Provider value={{ user: status.user, signOut: () => void deps.authGateway.signOut() }}>
-      {children}
+    <AuthContext.Provider value={value}>
+      {/* `key`: cada sesión monta su propio store; si no, React reusaría el del demo. */}
+      <Fragment key={account ? status.user.uid : 'demo'}>{children(account ? deps : demo)}</Fragment>
     </AuthContext.Provider>
   );
 }

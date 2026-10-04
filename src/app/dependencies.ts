@@ -6,6 +6,7 @@
 import { firestoreProjectRepository } from '../features/projects/infrastructure/firestore-project-repository';
 import type { ProjectRepository } from '../features/projects/domain/ports';
 import { firestoreSettingsRepository } from '../features/settings/infrastructure/firestore-settings-repository';
+import { createLocalSettingsRepository } from '../features/settings/infrastructure/local-settings-repository';
 import type { SettingsRepository } from '../features/settings/domain/ports';
 import { firestoreTaskRepository } from '../features/tasks/infrastructure/firestore-task-repository';
 import type { TaskRepository } from '../features/tasks/domain/ports';
@@ -14,6 +15,10 @@ import type { AuthGateway, Clock, IdGenerator } from '../shared/domain/ports';
 import { browserAuthGateway } from '../shared/infrastructure/auth';
 import { copyText } from '../shared/infrastructure/copy-text';
 import { downloadFile } from '../shared/infrastructure/download-file';
+import { createLocalCollection } from '../shared/infrastructure/local-storage';
+import { buildDemoData } from './demo-data';
+import type { Project } from '../features/projects/domain/project';
+import type { Task } from '../features/tasks/domain/task';
 
 export type Deps = {
   readonly taskRepository: TaskRepository;
@@ -40,6 +45,19 @@ export const productionDeps: Deps = {
   idGenerator: uid,
   downloadFile,
   copyText,
+};
+
+/** Modo demo (sin sesión): los mismos casos de uso sobre `localStorage`, con
+ *  datos de ejemplo la primera vez. Nada sale del navegador. */
+export const createDemoDeps = (base: Deps = productionDeps): Deps => {
+  let data: ReturnType<typeof buildDemoData> | null = null;
+  const seed = () => (data ??= buildDemoData(base.clock()));
+  return {
+    ...base,
+    taskRepository: createLocalCollection<Task>('todo.demo.tasks', () => seed().tasks),
+    projectRepository: createLocalCollection<Project>('todo.demo.projects', () => seed().projects),
+    settingsRepository: createLocalSettingsRepository('todo.demo.settings'),
+  };
 };
 
 /** Las de producción con lo que se le pase encima. Pensado para tests. */

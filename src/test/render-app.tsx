@@ -53,7 +53,7 @@ export const createTestDeps = (seed: Seed = {}) => {
   return { deps, taskRepository, projectRepository, settingsRepository, downloads, clipboard };
 };
 
-const auth = { user: { uid: 'u1', email: 'test@example.com', displayName: 'Test' }, signOut: () => undefined };
+const auth = { user: { uid: 'u1', email: 'test@example.com', displayName: 'Test' }, signIn: () => undefined, signOut: () => undefined, signInError: null };
 
 export const renderApp = (seed?: Seed, hash = '#/hoy') => {
   window.location.hash = hash;

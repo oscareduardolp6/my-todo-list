@@ -16,6 +16,7 @@ import { useAppStore } from '../store-context';
 import { AddTaskFab } from './AddTaskFab';
 import { SearchFab } from './SearchFab';
 import { BottomNav } from './BottomNav';
+import { DemoBanner } from './DemoBanner';
 import { ShortcutsContainer } from './ShortcutsContainer';
 import { Sidebar } from './Sidebar';
 import { useApplyTheme } from './useApplyTheme';
@@ -55,6 +56,7 @@ export function AppShell() {
       <main className="h-full flex-1 overflow-y-auto">
         {/* Padding inferior: que la barra y el botón flotante no tapen lo último de la lista. */}
         <div className="mx-auto max-w-3xl px-4 pb-32 pt-6 lg:px-10 lg:pb-16 lg:pt-10">
+          <DemoBanner />
           <ActivePage route={route} />
         </div>
       </main>
