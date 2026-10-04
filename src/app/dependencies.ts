@@ -12,6 +12,7 @@ import type { TaskRepository } from '../features/tasks/domain/ports';
 import { uid } from '../shared/domain/ids';
 import type { AuthGateway, Clock, IdGenerator } from '../shared/domain/ports';
 import { browserAuthGateway } from '../shared/infrastructure/auth';
+import { copyText } from '../shared/infrastructure/copy-text';
 import { downloadFile } from '../shared/infrastructure/download-file';
 
 export type Deps = {
@@ -26,6 +27,8 @@ export type Deps = {
   readonly idGenerator: IdGenerator;
   /** Entrega un archivo de texto al usuario (el respaldo). Inyectable en test. */
   readonly downloadFile: (filename: string, content: string) => void;
+  /** Copia un texto al portapapeles. Inyectable en test. */
+  readonly copyText: (text: string) => Promise<void>;
 };
 
 export const productionDeps: Deps = {
@@ -36,6 +39,7 @@ export const productionDeps: Deps = {
   clock: () => Date.now(),
   idGenerator: uid,
   downloadFile,
+  copyText,
 };
 
 /** Las de producción con lo que se le pase encima. Pensado para tests. */

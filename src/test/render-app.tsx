@@ -31,6 +31,7 @@ type Seed = {
 export const createTestDeps = (seed: Seed = {}) => {
   let n = 0;
   const downloads: { filename: string; content: string }[] = [];
+  const clipboard: string[] = [];
   const taskRepository = createInMemoryTaskRepository(seed.tasks);
   const projectRepository = createInMemoryProjectRepository(seed.projects);
   const settingsRepository = createInMemorySettingsRepository(seed.settings);
@@ -41,8 +42,15 @@ export const createTestDeps = (seed: Seed = {}) => {
     clock: () => seed.now ?? noon(TEST_TODAY),
     downloadFile: (filename, content) => void downloads.push({ filename, content }),
     idGenerator: (prefix = 'id') => `${prefix}_${++n}`,
+    copyText: async (text) => void clipboard.push(text),
+    authGateway: {
+      signInWithGoogle: async () => undefined,
+      signOut: async () => undefined,
+      onAuthStateChanged: () => () => undefined,
+      quickCaptureConnection: () => ({ apiKey: 'test-key', projectId: 'test-project', refreshToken: 'test-refresh' }),
+    },
   });
-  return { deps, taskRepository, projectRepository, settingsRepository, downloads };
+  return { deps, taskRepository, projectRepository, settingsRepository, downloads, clipboard };
 };
 
 const auth = { user: { uid: 'u1', email: 'test@example.com', displayName: 'Test' }, signOut: () => undefined };
