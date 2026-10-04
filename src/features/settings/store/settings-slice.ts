@@ -3,6 +3,7 @@ import type { Deps } from '../../../app/dependencies';
 import { runRTE } from '../../../app/run';
 import type { AppStore } from '../../../app/store';
 import { settle } from '../../../app/store/run-outcome';
+import { copyQuickCaptureConnection } from '../application/copy-quick-capture-connection';
 import { exportBackup } from '../application/export-backup';
 import { importBackup } from '../application/import-backup';
 import { updateSettings } from '../application/update-settings';
@@ -12,6 +13,8 @@ import type { Settings, SettingsPatch } from '../domain/settings';
 
 export type SettingsSlice = {
   changeSettings: (patch: SettingsPatch) => void;
+  /** Copia la conexión para la captura rápida desde Raycast (contiene un secreto). */
+  copyQuickCaptureConnection: () => Promise<void>;
   /** Descarga un respaldo (tareas y proyectos) como archivo JSON. */
   downloadBackup: () => Promise<void>;
   /** Valida el texto de un archivo; devuelve el respaldo (o `null` con un toast de error). */
@@ -28,6 +31,11 @@ export const createSettingsSlice =
       set((s) => ({ settings: { ...s.settings, ...patch } }));
       get().refreshToday(); // el inicio del día cambia qué es "hoy"
       void runRTE(updateSettings(get().settings, patch), deps).then(settle<Settings>(get));
+    },
+    copyQuickCaptureConnection: async () => {
+      settle<void>(get, () => get().pushToast({ message: 'Conexión copiada', kind: 'info' }))(
+        await runRTE(copyQuickCaptureConnection(), deps),
+      );
     },
     downloadBackup: async () => {
       const { tasks, projects } = get();

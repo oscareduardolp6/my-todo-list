@@ -40,6 +40,15 @@ export const browserAuthGateway: AuthGateway = {
     if (isStandalonePwa()) await signInWithRedirect(auth(), googleProvider);
     else await signInWithPopup(auth(), googleProvider);
   },
+  quickCaptureConnection: () => {
+    const user = auth().currentUser;
+    if (!user) throw new Error('No hay sesión iniciada');
+    return {
+      apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+      refreshToken: user.refreshToken,
+    };
+  },
   signOut: () => firebaseSignOut(auth()),
   onAuthStateChanged: (cb, onError) => {
     ensureRedirectChecked(onError);

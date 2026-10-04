@@ -54,6 +54,16 @@ Cada push a `main` corre tests, compila y despliega a GitHub Pages ([workflow](.
 - El build usa `VITE_BASE=/<nombre-del-repo>/`; en local la base es `/`.
 - `oscarlp6.dev` ya está en los dominios autorizados de Firebase Auth (por Hilo), así que el login con Google funciona.
 
+### Captura rápida desde Raycast
+
+Los comandos viven en `C:\Users\oscar\dev\raycast-scripts` (`tarea-nueva.ps1`, `tarea-configurar.ps1`, carpeta `tareas/`). Escriben en Firestore por REST con **tu** sesión (refresh token), no con credenciales de admin, así que las reglas siguen aplicando.
+
+1. En la app: Ajustes → *Captura rápida (Raycast)* → **Copiar conexión**.
+2. En Raycast: **Configurar Tareas** (guarda la conexión en `~/.config/my-todo-list/raycast.json`).
+3. **Nueva Tarea**: `Comprar leche mañana p1 #casa !viernes` → `p1`–`p4` prioridad, `#proyecto`, fecha suelta = agendada, `!fecha` = límite (hoy, mañana, pasado mañana, lunes…domingo, `22/10`, `2026-10-22`).
+
+La conexión es un secreto: si se filtra, revoca los tokens del usuario en Firebase y repite los pasos 1 y 2.
+
 ### Instalar en el teléfono
 
 Abre https://oscarlp6.dev/my-todo-list/ en Chrome (Android) y elige *Instalar app* / *Agregar a pantalla de principal*; en iPhone, Safari → Compartir → *Agregar a pantalla de inicio*. Después de la primera visita abre sin conexión.

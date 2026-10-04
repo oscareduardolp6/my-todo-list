@@ -6,6 +6,7 @@ import { PageHeader } from '../../../../shared/ui/PageHeader';
 import { ACCENTS, DAY_START_HOURS, dayStartLabel } from '../../domain/settings';
 import type { Theme } from '../../domain/settings';
 import { BackupSection } from './BackupSection';
+import { QuickCaptureSection } from './QuickCaptureSection';
 
 const THEMES: { id: Theme; label: string; icon: ReactNode }[] = [
   { id: 'dark', label: 'Oscuro', icon: <Moon size={16} /> },
@@ -111,6 +112,10 @@ export function SettingsPage() {
 
       <Group title="Respaldo">
         <BackupSection />
+      </Group>
+
+      <Group title="Captura rápida (Raycast)">
+        <QuickCaptureSection />
       </Group>
 
       <Group title="Cuenta">
