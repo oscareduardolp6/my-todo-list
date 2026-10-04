@@ -2,7 +2,7 @@ import { onSnapshot, setDoc } from 'firebase/firestore';
 import type { DocumentData } from 'firebase/firestore';
 import { userDoc } from '../../../shared/infrastructure/firestore-collection';
 import { asString } from '../../../shared/infrastructure/firestore-parse';
-import { DEFAULT_SETTINGS, isTheme } from '../domain/settings';
+import { DEFAULT_SETTINGS, isDayStartHour, isTheme } from '../domain/settings';
 import type { Settings } from '../domain/settings';
 import type { SettingsRepository } from '../domain/ports';
 
@@ -16,6 +16,7 @@ export const settingsFromDoc = (data: DocumentData | undefined): Settings =>
         accent: asString(data.accent, DEFAULT_SETTINGS.accent),
         weekStartsOn: data.weekStartsOn === 0 ? 0 : 1,
         separateByPriority: data.separateByPriority === true,
+        dayStartHour: isDayStartHour(data.dayStartHour) ? data.dayStartHour : DEFAULT_SETTINGS.dayStartHour,
       }
     : DEFAULT_SETTINGS;
 

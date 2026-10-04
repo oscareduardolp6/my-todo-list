@@ -11,7 +11,7 @@
 
 import { E } from '../../../shared/fp';
 import type { Either } from 'fp-ts/Either';
-import { addDays, diffDays, isDateKey, toDateKey } from '../../../shared/domain/dates';
+import { addDays, diffDays, isDateKey } from '../../../shared/domain/dates';
 import type { DateKey } from '../../../shared/domain/dates';
 import { validationError } from '../../../shared/domain/errors';
 import type { TodoError } from '../../../shared/domain/errors';
@@ -122,10 +122,11 @@ export const patchTask = (task: Task, patch: TaskPatch, now: number): Either<Tod
   return problem ? E.left(problem) : E.right(next);
 };
 
-export const markCompleted = (task: Task, now: number): Task => ({
+/** `doneOn`: el día que cuenta (con tiempo extra, puede ser el anterior al de `now`). */
+export const markCompleted = (task: Task, now: number, doneOn: DateKey): Task => ({
   ...task,
   completedAt: now,
-  completedOn: toDateKey(now),
+  completedOn: doneOn,
   updatedAt: now,
 });
 
@@ -154,9 +155,9 @@ export const advanceTask = (task: Task, doneOn: DateKey, now: number): Task => {
 
 /** Completar una recurrente: la tarea avanza y la ocurrencia cerrada queda como
  *  copia completada sin recurrencia (de ahí leen los reportes). */
-export const completeOccurrence = (task: Task, now: number): { next: Task; done: Task } => ({
-  next: advanceTask(task, toDateKey(now), now),
-  done: { ...markCompleted(task, now), id: occurrenceId(task), recurrence: null },
+export const completeOccurrence = (task: Task, now: number, doneOn: DateKey): { next: Task; done: Task } => ({
+  next: advanceTask(task, doneOn, now),
+  done: { ...markCompleted(task, now, doneOn), id: occurrenceId(task), recurrence: null },
 });
 
 export const markPending = (task: Task, now: number): Task => ({

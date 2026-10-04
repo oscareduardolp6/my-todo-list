@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { useAuth } from '../../../../app/auth-context';
 import { useAppStore } from '../../../../app/store-context';
 import { PageHeader } from '../../../../shared/ui/PageHeader';
-import { ACCENTS } from '../../domain/settings';
+import { ACCENTS, DAY_START_HOURS, dayStartLabel } from '../../domain/settings';
 import type { Theme } from '../../domain/settings';
 import { BackupSection } from './BackupSection';
 
@@ -85,6 +85,28 @@ export function SettingsPage() {
           ))}
         </div>
         <p className="mt-2 text-xs text-faint">En las listas, deja un pequeño espacio entre urgentes, altas, medias y normales.</p>
+      </Group>
+
+      <Group title="El día termina a las">
+        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="El día termina a las">
+          {DAY_START_HOURS.map((hour) => (
+            <button
+              key={hour}
+              type="button"
+              role="radio"
+              aria-checked={settings.dayStartHour === hour}
+              onClick={() => change({ dayStartHour: hour })}
+              className={`${segment(settings.dayStartHour === hour)} flex-none`}
+            >
+              {hour === 0 ? 'Medianoche' : `${hour}:00 a. m.`}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-faint">
+          {settings.dayStartHour === 0
+            ? 'Tiempo extra para terminar tareas de noche: el día cambia a la hora que elijas en vez de a medianoche.'
+            : `Hasta las ${dayStartLabel(settings.dayStartHour)} sigue siendo “hoy” el día anterior: sus tareas no pasan a atrasadas antes y lo que completes cuenta para ese día en los reportes.`}
+        </p>
       </Group>
 
       <Group title="Respaldo">

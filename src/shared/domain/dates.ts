@@ -13,6 +13,15 @@ export const toDateKey = (ms: number): DateKey => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 };
 
+/** El día de calendario al que `ms` pertenece cuando el día arranca a las
+ *  `dayStartHour` y no a medianoche: con 3, la 1:30 a. m. del martes todavía
+ *  es lunes. Es el "tiempo extra" para terminar tareas de madrugada. */
+export const toDayKey = (ms: number, dayStartHour: number): DateKey => {
+  const d = new Date(ms);
+  d.setHours(d.getHours() - dayStartHour);
+  return toDateKey(d.getTime());
+};
+
 /** Medianoche local del día. */
 export const parseDateKey = (key: DateKey): Date => {
   const [y, m, d] = key.split('-').map(Number);

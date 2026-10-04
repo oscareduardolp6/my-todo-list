@@ -52,10 +52,10 @@ describe('task domain', () => {
     });
   });
 
-  it('completar guarda el día local; reabrir lo limpia', () => {
+  it('completar guarda el día indicado (puede diferir del de calendario); reabrir lo limpia', () => {
     const now = noon('2026-10-05');
-    const done = markCompleted(makeTask(), now);
-    expect(done).toMatchObject({ completedAt: now, completedOn: '2026-10-05' });
+    const done = markCompleted(makeTask(), now, '2026-10-04');
+    expect(done).toMatchObject({ completedAt: now, completedOn: '2026-10-04' });
     expect(markPending(done, now + 1)).toMatchObject({ completedAt: null, completedOn: null });
   });
 

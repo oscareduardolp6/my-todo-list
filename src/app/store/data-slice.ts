@@ -38,7 +38,10 @@ export const createDataSlice =
         subscribeToData({
           onTasks: (tasks) => set((s) => ({ tasks, loaded: { ...s.loaded, tasks: true }, syncError: null })),
           onProjects: (projects) => set((s) => ({ projects, loaded: { ...s.loaded, projects: true } })),
-          onSettings: (settings) => set((s) => ({ settings, loaded: { ...s.loaded, settings: true } })),
+          onSettings: (settings) => {
+            set((s) => ({ settings, loaded: { ...s.loaded, settings: true } }));
+            get().refreshToday();
+          },
           onError: (error) => {
             set({ syncError: messageFor(error) });
             get().pushToast({ message: 'Sin conexión con el servidor. Trabajando con los datos guardados.', kind: 'error' });

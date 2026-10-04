@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
-import { BarChart3, Flag } from 'lucide-react';
+import { BarChart3, Flag, Moon } from 'lucide-react';
 import { useAppStore } from '../../../../app/store-context';
 import { formatDayHeading, formatShort } from '../../../../shared/domain/dates';
 import type { DateKey } from '../../../../shared/domain/dates';
 import { EmptyState } from '../../../../shared/ui/EmptyState';
 import { PageHeader } from '../../../../shared/ui/PageHeader';
+import { dayStartLabel } from '../../../settings/domain/settings';
 import { withInbox } from '../../../projects/domain/project';
 import type { Project } from '../../../projects/domain/project';
 import { TaskRow } from '../../../tasks/ui/components/TaskRow';
@@ -33,6 +34,7 @@ export function ReportsPage() {
   const tasks = useAppStore((s) => s.tasks);
   const projects = useAppStore((s) => s.projects);
   const today = useAppStore((s) => s.today);
+  const dayStartHour = useAppStore((s) => s.settings.dayStartHour);
   const toggleTask = useAppStore((s) => s.toggleTask);
   const openTaskEditor = useAppStore((s) => s.openTaskEditor);
 
@@ -152,6 +154,11 @@ export function ReportsPage() {
             </ul>
           </section>
         ))
+      )}
+      {dayStartHour > 0 && (
+        <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-faint">
+          <Moon size={12} /> Tiempo extra activado: lo que completas antes de las {dayStartLabel(dayStartHour)} cuenta para el día anterior.
+        </p>
       )}
       {report.withDeadline > 0 && (
         <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-faint">

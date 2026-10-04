@@ -2,8 +2,9 @@
    persiste ni se sincroniza. */
 
 import type { StateCreator } from 'zustand';
-import { toDateKey } from '../../shared/domain/dates';
+import { toDayKey } from '../../shared/domain/dates';
 import type { DateKey } from '../../shared/domain/dates';
+import { DEFAULT_SETTINGS } from '../../features/settings/domain/settings';
 import type { NewTask } from '../../features/tasks/domain/task';
 import type { Deps } from '../dependencies';
 import type { AppStore } from './index';
@@ -23,7 +24,7 @@ export type TaskEditorState =
 export type ProjectEditorState = { readonly mode: 'new' } | { readonly mode: 'edit'; readonly projectId: string };
 
 export type UiSlice = {
-  /** El día de hoy (local). Se refresca solo: una PWA puede quedar abierta días. */
+  /** El día de hoy (local, según `settings.dayStartHour`). Se refresca solo: una PWA puede quedar abierta días. */
   today: DateKey;
   toasts: Toast[];
   taskEditor: TaskEditorState | null;
@@ -32,6 +33,8 @@ export type UiSlice = {
   rescheduleTaskId: string | null;
   searchOpen: boolean;
   shortcutsOpen: boolean;
+  /** El día de calendario de ESTE instante según el ajuste de inicio del día (no el `today` cacheado). */
+  dayNow: () => DateKey;
   refreshToday: () => void;
   pushToast: (toast: Omit<Toast, 'id'>) => void;
   dismissToast: (id: string) => void;
@@ -52,15 +55,16 @@ const MAX_TOASTS = 3;
 export const createUiSlice =
   (deps: Deps): StateCreator<AppStore, [], [], UiSlice> =>
   (set, get) => ({
-    today: toDateKey(deps.clock()),
+    today: toDayKey(deps.clock(), DEFAULT_SETTINGS.dayStartHour),
     toasts: [],
     taskEditor: null,
     projectEditor: null,
     rescheduleTaskId: null,
     searchOpen: false,
     shortcutsOpen: false,
+    dayNow: () => toDayKey(deps.clock(), get().settings.dayStartHour),
     refreshToday: () => {
-      const today = toDateKey(deps.clock());
+      const today = get().dayNow();
       if (today !== get().today) set({ today });
     },
     pushToast: (toast) =>

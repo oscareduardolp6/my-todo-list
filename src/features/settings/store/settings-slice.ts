@@ -26,6 +26,7 @@ export const createSettingsSlice =
     changeSettings: (patch) => {
       // Optimista: el tema se ve al instante, sin esperar al servidor.
       set((s) => ({ settings: { ...s.settings, ...patch } }));
+      get().refreshToday(); // el inicio del día cambia qué es "hoy"
       void runRTE(updateSettings(get().settings, patch), deps).then(settle<Settings>(get));
     },
     downloadBackup: async () => {

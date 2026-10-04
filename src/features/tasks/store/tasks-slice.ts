@@ -68,13 +68,13 @@ export const createTasksSlice =
         return;
       }
       const recurring = isRecurring(task);
-      const next = recurring ? advanceTask(task, get().today, deps.clock()).scheduledFor : null;
+      const next = recurring ? advanceTask(task, get().dayNow(), deps.clock()).scheduledFor : null;
       get().pushToast({
         message: next ? `Tarea completada · se repite ${formatShort(next, get().today)}` : 'Tarea completada',
         kind: 'info',
         action: { label: 'Deshacer', run: () => get().restoreTask(task, recurring ? [occurrenceId(task)] : []) },
       });
-      void runRTE(completeTask(task), deps).then(settle<Task>(get));
+      void runRTE(completeTask(task, get().dayNow()), deps).then(settle<Task>(get));
     },
 
     removeTask: (task) => {
@@ -93,7 +93,7 @@ export const createTasksSlice =
         kind: 'info',
         action: { label: 'Deshacer', run: () => get().restoreTask(task) },
       });
-      void runRTE(skipOccurrence(task), deps).then(settle<Task>(get));
+      void runRTE(skipOccurrence(task, get().dayNow()), deps).then(settle<Task>(get));
     },
 
     restoreTask: (snapshot, alsoRemove) => {

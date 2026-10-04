@@ -99,7 +99,7 @@ describe('completar una recurrente (dominio)', () => {
   });
 
   it('deja una copia completada, sin recurrencia y con id determinista', () => {
-    const { next, done } = completeOccurrence(task, noon('2026-10-06'));
+    const { next, done } = completeOccurrence(task, noon('2026-10-06'), '2026-10-06');
     expect(done).toMatchObject({
       id: occurrenceId(task),
       recurrence: null,

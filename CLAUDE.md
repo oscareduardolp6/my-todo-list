@@ -27,6 +27,7 @@ Reglas:
 ## Decisiones que no son obvias
 
 - **Fechas de calendario = `YYYY-MM-DD` local** (`DateKey`, `shared/domain/dates.ts`), no timestamps: "22 de octubre" significa lo mismo en cualquier zona. Los instantes reales (`createdAt`, `completedAt`) sí son epoch ms.
+- **El día puede arrancar después de medianoche** (`settings.dayStartHour`, 0–6): "hoy" es `toDayKey(clock(), dayStartHour)`, no `toDateKey`. `store.today` y `dayNow()` ya lo aplican; `completedOn` se guarda con ese día. No uses `toDateKey(Date.now())` para decidir "hoy".
 - **`scheduledFor` vs `deadline`:** reagendar cambia solo `scheduledFor` (y suma a `rescheduleCount`); `deadline` no se toca nunca. Día efectivo = `scheduledFor ?? deadline` (`effectiveDate`).
 - **Reportes** se basan en `completedOn` (día local en que se marcó hecha), no en la fecha agendada.
 - **Deshacer = restaurar el snapshot previo completo** (`restoreTask`), sirve para completar y para borrar. El toast se publica *antes* de esperar a Firestore (optimista): offline, las promesas de escritura no resuelven hasta reconectar y no debe bloquear el deshacer.

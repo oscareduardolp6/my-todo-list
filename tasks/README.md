@@ -13,6 +13,7 @@ Ideas y funcionalidades que queremos agregar a la app, una por archivo. No es un
 | [Respaldo de datos en archivo](respaldo-en-archivo.md) | 5 | Implementada |
 | [Búsqueda de tareas](busqueda.md) | 6 | Implementada |
 | [Reagendar desde la vista de lista](reagendar-desde-lista.md) | 7 | Implementada |
+| [Tiempo extra al final del día](tiempo-extra-fin-de-dia.md) | 8 | Implementada |
 
 ## Formato
 

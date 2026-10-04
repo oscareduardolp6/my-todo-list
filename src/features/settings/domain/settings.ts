@@ -23,10 +23,27 @@ export type Settings = {
   readonly weekStartsOn: WeekStart;
   /** Deja un espacio entre las tareas de distinta prioridad (urgente, alta, media, normal). */
   readonly separateByPriority: boolean;
+  /** Hora (0–6) a la que arranca el día. Con 3, "hoy" sigue siendo ayer hasta las 3:00 a. m.:
+   *  las tareas no pasan a atrasadas antes y lo que se complete cuenta para el día anterior. */
+  readonly dayStartHour: DayStartHour;
 };
 
+export const DAY_START_HOURS = [0, 1, 2, 3, 4, 5, 6] as const;
+export type DayStartHour = (typeof DAY_START_HOURS)[number];
+
+export const isDayStartHour = (v: unknown): v is DayStartHour => DAY_START_HOURS.some((h) => h === v);
+
+/** "medianoche", "3:00 a. m.". */
+export const dayStartLabel = (hour: DayStartHour): string => (hour === 0 ? 'medianoche' : `${hour}:00 a. m.`);
+
 /** Oscuro por defecto. */
-export const DEFAULT_SETTINGS: Settings = { theme: 'dark', accent: 'violet', weekStartsOn: 1, separateByPriority: false };
+export const DEFAULT_SETTINGS: Settings = {
+  theme: 'dark',
+  accent: 'violet',
+  weekStartsOn: 1,
+  separateByPriority: false,
+  dayStartHour: 0,
+};
 
 export type SettingsPatch = Partial<Settings>;
 

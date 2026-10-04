@@ -1,4 +1,4 @@
-import { addDays, diffDays, eachDay, formatRelative, isDateKey, nextSaturday, startOfWeek, toDateKey } from './dates';
+import { addDays, diffDays, eachDay, formatRelative, isDateKey, nextSaturday, startOfWeek, toDateKey, toDayKey } from './dates';
 
 describe('dates', () => {
   it('toDateKey usa la fecha local', () => {
@@ -43,5 +43,23 @@ describe('dates', () => {
     expect(formatRelative('2026-09-30', '2026-09-29')).toBe('Mañana');
     expect(formatRelative('2026-09-28', '2026-09-29')).toBe('Ayer');
     expect(formatRelative('2026-10-22', '2026-09-29')).toBe('22 oct');
+  });
+});
+
+describe('toDayKey (el día arranca a una hora distinta de medianoche)', () => {
+  const at = (h: number, m = 0) => new Date(2026, 9, 3, h, m).getTime();
+
+  it('antes de la hora de inicio todavía es el día anterior', () => {
+    expect(toDayKey(at(1, 30), 3)).toBe('2026-10-02');
+    expect(toDayKey(at(2, 59), 3)).toBe('2026-10-02');
+  });
+
+  it('a partir de la hora de inicio ya es el día nuevo', () => {
+    expect(toDayKey(at(3), 3)).toBe('2026-10-03');
+    expect(toDayKey(at(23, 59), 3)).toBe('2026-10-03');
+  });
+
+  it('con 0 equivale a toDateKey', () => {
+    expect(toDayKey(at(0, 5), 0)).toBe(toDateKey(at(0, 5)));
   });
 });
