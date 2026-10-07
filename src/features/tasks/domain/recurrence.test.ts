@@ -1,7 +1,7 @@
 import { makeTask, noon } from '../../../test/factories';
 import { describeRecurrence, isRecurrence, nextOccurrence, parseRecurrence } from './recurrence';
 import type { Recurrence } from './recurrence';
-import { advanceTask, completeOccurrence, occurrenceId } from './task';
+import { advanceTask, completeOccurrence, finishSeries, occurrenceId } from './task';
 
 const rec = (over: Partial<Recurrence> = {}): Recurrence => ({
   frequency: 'weekly',
@@ -108,5 +108,17 @@ describe('completar una recurrente (dominio)', () => {
     });
     expect(next.id).toBe('r');
     expect(next.scheduledFor).toBe('2026-10-12');
+  });
+
+  it('terminar la serie la completa sin avanzar y quita la repetición', () => {
+    const done = finishSeries(task, noon('2026-10-06'), '2026-10-06');
+    expect(done).toMatchObject({
+      id: 'r',
+      recurrence: null,
+      scheduledFor: '2026-10-05',
+      deadline: '2026-10-08',
+      completedOn: '2026-10-06',
+      completedAt: noon('2026-10-06'),
+    });
   });
 });

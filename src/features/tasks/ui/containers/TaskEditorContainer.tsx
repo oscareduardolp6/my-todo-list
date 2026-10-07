@@ -17,6 +17,7 @@ export function TaskEditorContainer() {
   const editTask = useAppStore((s) => s.editTask);
   const removeTask = useAppStore((s) => s.removeTask);
   const skipTask = useAppStore((s) => s.skipTask);
+  const finishTaskSeries = useAppStore((s) => s.finishTaskSeries);
   const allProjects = useMemo(() => withInbox(projects), [projects]);
 
   if (!editor) return null;
@@ -45,6 +46,14 @@ export function TaskEditorContainer() {
           task
             ? () => {
                 skipTask(task);
+                close();
+              }
+            : undefined
+        }
+        onFinish={
+          task
+            ? () => {
+                finishTaskSeries(task);
                 close();
               }
             : undefined

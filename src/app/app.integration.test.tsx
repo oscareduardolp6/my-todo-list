@@ -52,6 +52,40 @@ describe('app (integración, repos en memoria)', () => {
     expect(await screen.findByText('Sacar basura')).toBeInTheDocument();
   });
 
+  it('completar definitivamente una recurrente la cierra sin borrarla y Deshacer recupera la repetición', async () => {
+    const user = userEvent.setup();
+    const { taskRepository } = renderApp({
+      tasks: [
+        makeTask({
+          id: 'r',
+          title: 'Clase de inglés',
+          scheduledFor: TEST_TODAY,
+          recurrence: { frequency: 'weekly', interval: 1, weekdays: [], mode: 'fixed' },
+        }),
+      ],
+    });
+
+    await user.click(await screen.findByText('Clase de inglés'));
+    await user.click(screen.getByRole('button', { name: 'Completar definitivamente' }));
+
+    await waitFor(() => expect(taskRepository.snapshot()[0]).toMatchObject({ recurrence: null, completedOn: TEST_TODAY }));
+    expect(taskRepository.snapshot()).toHaveLength(1);
+    expect(screen.queryByText('Clase de inglés')).not.toBeInTheDocument();
+
+    await user.click(within(screen.getByRole('status')).getByRole('button', { name: 'Deshacer' }));
+
+    await waitFor(() => expect(taskRepository.snapshot()[0]).toMatchObject({ completedAt: null, recurrence: { frequency: 'weekly' } }));
+    expect(await screen.findByText('Clase de inglés')).toBeInTheDocument();
+  });
+
+  it('no ofrece completar definitivamente en una tarea que no se repite', async () => {
+    const user = userEvent.setup();
+    renderApp({ tasks: [makeTask({ id: 'a', title: 'Llamar', scheduledFor: TEST_TODAY })] });
+
+    await user.click(await screen.findByText('Llamar'));
+    expect(screen.queryByRole('button', { name: 'Completar definitivamente' })).not.toBeInTheDocument();
+  });
+
   it('crea una tarea recurrente desde el formulario y exige fecha agendada', async () => {
     const user = userEvent.setup();
     const { taskRepository } = renderApp();

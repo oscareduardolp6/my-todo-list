@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { CalendarDays, Flag, Repeat, RotateCw, SkipForward, Trash2, X } from 'lucide-react';
+import { CalendarDays, CheckCheck, Flag, Repeat, RotateCw, SkipForward, Trash2, X } from 'lucide-react';
 import { addDays, formatShort } from '../../../../shared/domain/dates';
 import type { DateKey, WeekStart } from '../../../../shared/domain/dates';
 import type { Project } from '../../../projects/domain/project';
@@ -25,6 +25,8 @@ export type TaskFormProps = {
   onDelete?: () => void;
   /** Solo en recurrentes: saltar esta ocurrencia sin borrar la serie. */
   onSkip?: () => void;
+  /** Solo en recurrentes: completarla y dejar de repetirla, sin borrarla. */
+  onFinish?: () => void;
 };
 
 const FREQUENCY_OPTIONS: { value: RecurrenceFrequency | 'none'; label: string }[] = [
@@ -71,7 +73,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   );
 }
 
-export function TaskForm({ task, defaults, projects, today, weekStartsOn, onSubmit, onCancel, onDelete, onSkip }: TaskFormProps) {
+export function TaskForm({ task, defaults, projects, today, weekStartsOn, onSubmit, onCancel, onDelete, onSkip, onFinish }: TaskFormProps) {
   const [title, setTitle] = useState(task?.title ?? defaults?.title ?? '');
   const [description, setDescription] = useState(task?.description ?? defaults?.description ?? '');
   const [priority, setPriority] = useState<Priority>(task?.priority ?? defaults?.priority ?? 4);
@@ -300,7 +302,7 @@ export function TaskForm({ task, defaults, projects, today, weekStartsOn, onSubm
         </p>
       </div>
 
-      <div className="flex items-center gap-2 pt-1">
+      <div className="flex flex-wrap items-center gap-2 pt-1">
         {onSkip && task && isRecurring(task) && (
           <button
             type="button"
@@ -308,6 +310,15 @@ export function TaskForm({ task, defaults, projects, today, weekStartsOn, onSubm
             className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2.5 text-xs text-muted hover:bg-surface-2"
           >
             <SkipForward size={14} /> Omitir esta vez
+          </button>
+        )}
+        {onFinish && task && isRecurring(task) && (
+          <button
+            type="button"
+            onClick={onFinish}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2.5 text-xs text-muted hover:bg-surface-2"
+          >
+            <CheckCheck size={14} /> Completar definitivamente
           </button>
         )}
         {onDelete && (
