@@ -160,7 +160,14 @@ export const completeOccurrence = (task: Task, now: number, doneOn: DateKey): { 
   done: { ...markCompleted(task, now, doneOn), id: occurrenceId(task), recurrence: null },
 });
 
-export const markPending = (task: Task, now: number): Task => ({
+/** Cerrar una recurrente para siempre: se completa esta ocurrencia y la tarea
+ *  deja de repetirse (queda en completadas, no se borra). */
+export const finishSeries = (task: Task, now: number, doneOn: DateKey): Task => ({
+  ...markCompleted(task, now, doneOn),
+  recurrence: null,
+});
+
+export const markPending =(task: Task, now: number): Task => ({
   ...task,
   completedAt: null,
   completedOn: null,

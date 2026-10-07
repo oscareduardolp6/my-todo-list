@@ -17,6 +17,7 @@ import { settle } from '../../../app/store/run-outcome';
 import { addTask } from '../application/add-task';
 import { completeTask } from '../application/complete-task';
 import { deleteTask } from '../application/delete-task';
+import { finishSeries } from '../application/finish-series';
 import { restoreTask } from '../application/restore-task';
 import { skipOccurrence } from '../application/skip-occurrence';
 import { uncompleteTask } from '../application/uncomplete-task';
@@ -34,6 +35,8 @@ export type TasksSlice = {
   removeTask: (task: Task) => void;
   /** Recurrente: salta a la siguiente fecha sin marcar nada como hecho. */
   skipTask: (task: Task) => void;
+  /** Recurrente que ya terminó: la completa y deja de repetirla, sin borrarla. */
+  finishTaskSeries: (task: Task) => void;
   /** Restaura el snapshot y quita los documentos que la acción creó (copia histórica). */
   restoreTask: (snapshot: Task, alsoRemove?: readonly string[]) => void;
 };
@@ -94,6 +97,16 @@ export const createTasksSlice =
         action: { label: 'Deshacer', run: () => get().restoreTask(task) },
       });
       void runRTE(skipOccurrence(task, get().dayNow()), deps).then(settle<Task>(get));
+    },
+
+    finishTaskSeries: (task) => {
+      if (!isRecurring(task)) return;
+      get().pushToast({
+        message: 'Tarea completada · ya no se repite',
+        kind: 'info',
+        action: { label: 'Deshacer', run: () => get().restoreTask(task) },
+      });
+      void runRTE(finishSeries(task, get().dayNow()), deps).then(settle<Task>(get));
     },
 
     restoreTask: (snapshot, alsoRemove) => {
