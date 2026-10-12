@@ -101,6 +101,22 @@ export const createTask = (input: NewTask, ctx: { id: string; now: number }): Ei
   return problem ? E.left(problem) : E.right(task);
 };
 
+/** Copia de una tarea: mismo contenido, fechas y repetición, pero pendiente y
+ *  como si acabara de nacer (sin historial de reagendados ni de completado). */
+export const duplicateTask = (task: Task, ctx: { id: string; now: number }): Either<TodoError, Task> =>
+  createTask(
+    {
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      projectId: task.projectId,
+      scheduledFor: task.scheduledFor,
+      deadline: task.deadline,
+      recurrence: task.recurrence,
+    },
+    ctx,
+  );
+
 /** Aplica un cambio parcial. Si `scheduledFor` cambia de un valor a otro (o se
  *  quita), cuenta como reagendado. Asignar la primera fecha no cuenta. */
 export const patchTask = (task: Task, patch: TaskPatch, now: number): Either<TodoError, Task> => {

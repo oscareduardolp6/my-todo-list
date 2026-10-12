@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { CalendarDays, CheckCheck, Flag, Repeat, RotateCw, SkipForward, Trash2, X } from 'lucide-react';
+import { CalendarDays, CheckCheck, Copy, Flag, Repeat, RotateCw, SkipForward, Trash2, X } from 'lucide-react';
 import { addDays, formatShort } from '../../../../shared/domain/dates';
 import type { DateKey, WeekStart } from '../../../../shared/domain/dates';
 import type { Project } from '../../../projects/domain/project';
@@ -23,6 +23,8 @@ export type TaskFormProps = {
   onSubmit: (values: TaskFormValues) => void;
   onCancel: () => void;
   onDelete?: () => void;
+  /** Solo al editar: crea una copia de la tarea. */
+  onDuplicate?: () => void;
   /** Solo en recurrentes: saltar esta ocurrencia sin borrar la serie. */
   onSkip?: () => void;
   /** Solo en recurrentes: completarla y dejar de repetirla, sin borrarla. */
@@ -73,7 +75,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
   );
 }
 
-export function TaskForm({ task, defaults, projects, today, weekStartsOn, onSubmit, onCancel, onDelete, onSkip, onFinish }: TaskFormProps) {
+export function TaskForm({ task, defaults, projects, today, weekStartsOn, onSubmit, onCancel, onDelete, onDuplicate, onSkip, onFinish }: TaskFormProps) {
   const [title, setTitle] = useState(task?.title ?? defaults?.title ?? '');
   const [description, setDescription] = useState(task?.description ?? defaults?.description ?? '');
   const [priority, setPriority] = useState<Priority>(task?.priority ?? defaults?.priority ?? 4);
@@ -319,6 +321,16 @@ export function TaskForm({ task, defaults, projects, today, weekStartsOn, onSubm
             className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2.5 text-xs text-muted hover:bg-surface-2"
           >
             <CheckCheck size={14} /> Completar definitivamente
+          </button>
+        )}
+        {onDuplicate && (
+          <button
+            type="button"
+            onClick={onDuplicate}
+            aria-label="Duplicar tarea"
+            className="rounded-lg border border-border p-2.5 text-muted hover:bg-surface-2"
+          >
+            <Copy size={17} />
           </button>
         )}
         {onDelete && (

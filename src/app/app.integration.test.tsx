@@ -121,6 +121,36 @@ describe('app (integración, repos en memoria)', () => {
     expect(await screen.findByText('Llamar')).toBeInTheDocument();
   });
 
+  it('duplica una tarea y se puede deshacer', async () => {
+    const user = userEvent.setup();
+    const { taskRepository } = renderApp({
+      tasks: [
+        makeTask({
+          id: 'a',
+          title: 'Llamar',
+          priority: 2,
+          scheduledFor: TEST_TODAY,
+          rescheduleCount: 3,
+        }),
+      ],
+    });
+
+    await user.click(await screen.findByText('Llamar'));
+    await user.click(screen.getByRole('button', { name: 'Duplicar tarea' }));
+    await waitFor(() => expect(taskRepository.snapshot()).toHaveLength(2));
+    const copy = taskRepository.snapshot().find((t) => t.id !== 'a');
+    expect(copy).toMatchObject({
+      title: 'Llamar',
+      priority: 2,
+      scheduledFor: TEST_TODAY,
+      rescheduleCount: 0,
+      completedAt: null,
+    });
+
+    await user.click(within(screen.getByRole('status')).getByRole('button', { name: 'Deshacer' }));
+    await waitFor(() => expect(taskRepository.snapshot().map((t) => t.id)).toEqual(['a']));
+  });
+
   it('crea una tarea con prioridad, fecha agendada y fecha límite', async () => {
     const user = userEvent.setup();
     const { taskRepository } = renderApp();

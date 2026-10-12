@@ -17,6 +17,7 @@ import { settle } from '../../../app/store/run-outcome';
 import { addTask } from '../application/add-task';
 import { completeTask } from '../application/complete-task';
 import { deleteTask } from '../application/delete-task';
+import { duplicateTask } from '../application/duplicate-task';
 import { finishSeries } from '../application/finish-series';
 import { restoreTask } from '../application/restore-task';
 import { skipOccurrence } from '../application/skip-occurrence';
@@ -33,6 +34,8 @@ export type TasksSlice = {
   /** Completa (con toast de deshacer) o reabre, según el estado actual. */
   toggleTask: (task: Task) => void;
   removeTask: (task: Task) => void;
+  /** Crea una copia pendiente de la tarea, con toast de deshacer (borra la copia). */
+  duplicateTask: (task: Task) => void;
   /** Recurrente: salta a la siguiente fecha sin marcar nada como hecho. */
   skipTask: (task: Task) => void;
   /** Recurrente que ya terminó: la completa y deja de repetirla, sin borrarla. */
@@ -87,6 +90,16 @@ export const createTasksSlice =
         action: { label: 'Deshacer', run: () => get().restoreTask(task) },
       });
       void runRTE(deleteTask(task.id), deps).then(settle<void>(get));
+    },
+
+    duplicateTask: (task) => {
+      const id = deps.idGenerator('task');
+      get().pushToast({
+        message: 'Tarea duplicada',
+        kind: 'info',
+        action: { label: 'Deshacer', run: () => void runRTE(deleteTask(id), deps).then(settle<void>(get)) },
+      });
+      void runRTE(duplicateTask(task, id), deps).then(settle<Task>(get));
     },
 
     skipTask: (task) => {
