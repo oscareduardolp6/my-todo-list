@@ -16,6 +16,7 @@ export function TaskEditorContainer() {
   const createTask = useAppStore((s) => s.createTask);
   const editTask = useAppStore((s) => s.editTask);
   const removeTask = useAppStore((s) => s.removeTask);
+  const duplicateTask = useAppStore((s) => s.duplicateTask);
   const skipTask = useAppStore((s) => s.skipTask);
   const finishTaskSeries = useAppStore((s) => s.finishTaskSeries);
   const allProjects = useMemo(() => withInbox(projects), [projects]);
@@ -54,6 +55,14 @@ export function TaskEditorContainer() {
           task
             ? () => {
                 finishTaskSeries(task);
+                close();
+              }
+            : undefined
+        }
+        onDuplicate={
+          task
+            ? () => {
+                duplicateTask(task);
                 close();
               }
             : undefined

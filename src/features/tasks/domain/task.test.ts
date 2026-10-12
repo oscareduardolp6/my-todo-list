@@ -1,6 +1,6 @@
 import { isLeft, isRight } from 'fp-ts/Either';
 import { makeTask, noon } from '../../../test/factories';
-import { compareTasks, createTask, effectiveDate, isOverdue, markCompleted, markPending, patchTask } from './task';
+import { compareTasks, createTask, duplicateTask, effectiveDate, isOverdue, markCompleted, markPending, patchTask } from './task';
 import type { Task } from './task';
 
 const right = <A>(e: { _tag: string; right?: A }): A => {
@@ -20,6 +20,22 @@ describe('task domain', () => {
   it('rechaza título vacío y fechas inválidas', () => {
     expect(isLeft(createTask({ title: '   ' }, { id: 'a', now: 1 }))).toBe(true);
     expect(isLeft(createTask({ title: 'x', deadline: '2026-13-40' }, { id: 'a', now: 1 }))).toBe(true);
+  });
+
+  it('duplicateTask copia el contenido pero la deja pendiente y sin historial', () => {
+    const original = makeTask({
+      id: 'a', title: 'Pagar renta', description: 'depto', priority: 2, projectId: 'p1',
+      scheduledFor: '2026-10-03', deadline: '2026-10-22',
+      recurrence: { frequency: 'monthly', interval: 1, weekdays: [], mode: 'fixed' },
+      rescheduleCount: 3, completedAt: 5, completedOn: '2026-10-03', createdAt: 1,
+    });
+    const copy = right<Task>(duplicateTask(original, { id: 'b', now: 99 }));
+    expect(copy).toEqual({
+      id: 'b', title: 'Pagar renta', description: 'depto', priority: 2, projectId: 'p1',
+      scheduledFor: '2026-10-03', deadline: '2026-10-22',
+      recurrence: { frequency: 'monthly', interval: 1, weekdays: [], mode: 'fixed' },
+      rescheduleCount: 0, completedAt: null, completedOn: null, createdAt: 99, updatedAt: 99,
+    });
   });
 
   describe('agendar vs. fecha límite', () => {
