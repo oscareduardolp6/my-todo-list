@@ -1,4 +1,4 @@
-/* Búsqueda de texto sobre tareas (puro). Sin distinguir mayúsculas ni acentos:
+/* Búsqueda de texto sobre tareas pendientes (puro). Sin distinguir mayúsculas ni acentos:
    "camion" encuentra "Camión". Varias palabras = todas deben aparecer (en
    cualquier orden) entre título y descripción. */
 
@@ -55,23 +55,17 @@ export const matchRanges = (text: string, tokens: readonly string[]): [number, n
 
 const hasAll = (haystack: string, tokens: readonly string[]): boolean => tokens.every((t) => haystack.includes(t));
 
-/** Tareas que coinciden. Orden: las que coinciden en el título primero, pendientes antes que
- *  completadas, y luego el orden de siempre (prioridad, fecha, antigüedad). */
+/** Tareas pendientes que coinciden (las completadas nunca aparecen). Orden: las que coinciden
+ *  en el título primero y luego el orden de siempre (prioridad, fecha, antigüedad). */
 export const searchTasks = (tasks: readonly Task[], query: string): Task[] => {
   const tokens = queryTokens(query);
   if (tokens.length === 0) return [];
   const ranked: { task: Task; inTitle: boolean }[] = [];
   for (const task of tasks) {
+    if (isCompleted(task)) continue;
     const title = normalize(task.title).text;
     const all = `${title} ${normalize(task.description).text}`;
     if (hasAll(all, tokens)) ranked.push({ task, inTitle: hasAll(title, tokens) });
   }
-  return ranked
-    .sort(
-      (a, b) =>
-        Number(!a.inTitle) - Number(!b.inTitle) ||
-        Number(isCompleted(a.task)) - Number(isCompleted(b.task)) ||
-        compareTasks(a.task, b.task),
-    )
-    .map((r) => r.task);
+  return ranked.sort((a, b) => Number(!a.inTitle) - Number(!b.inTitle) || compareTasks(a.task, b.task)).map((r) => r.task);
 };

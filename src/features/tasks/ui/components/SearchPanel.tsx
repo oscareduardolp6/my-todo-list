@@ -5,7 +5,6 @@ import { formatRelative } from '../../../../shared/domain/dates';
 import type { DateKey } from '../../../../shared/domain/dates';
 import type { Project } from '../../../projects/domain/project';
 import { matchRanges } from '../../domain/search';
-import { isCompleted } from '../../domain/task';
 import type { Task } from '../../domain/task';
 
 export type SearchPanelProps = {
@@ -82,12 +81,11 @@ export function SearchPanel({ query, tokens, results, total, today, projectsById
           </p>
           <ul className="max-h-[55dvh] overflow-y-auto">
             {results.map((t) => {
-              const done = isCompleted(t);
               const project = projectsById.get(t.projectId);
               return (
                 <li key={t.id}>
                   <button type="button" onClick={() => onPick(t)} className="w-full border-b border-border px-1 py-2.5 text-left hover:bg-surface-2">
-                    <p className={`text-[15px] leading-snug ${done ? 'text-faint line-through' : ''}`}>
+                    <p className="text-[15px] leading-snug">
                       <Highlight text={t.title} tokens={tokens} />
                     </p>
                     {t.description && (
@@ -96,7 +94,6 @@ export function SearchPanel({ query, tokens, results, total, today, projectsById
                       </p>
                     )}
                     <div className="mt-1 flex items-center gap-3 text-xs text-muted">
-                      {done && <span className="text-faint">Completada</span>}
                       {t.scheduledFor && (
                         <span className="inline-flex items-center gap-1">
                           <CalendarDays size={12} />

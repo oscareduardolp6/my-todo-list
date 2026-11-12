@@ -17,8 +17,13 @@ describe('searchTasks', () => {
     expect(ids(searchTasks(tasks, 'camión'))).toContain('a');
   });
 
-  it('busca en título y descripción; las de título van primero y, dentro de cada grupo, las pendientes antes', () => {
-    expect(ids(searchTasks(tasks, 'camion'))).toEqual(['b', 'd', 'a']);
+  it('busca en título y descripción; las de título van primero', () => {
+    expect(ids(searchTasks(tasks, 'camion'))).toEqual(['b', 'a']);
+  });
+
+  it('nunca devuelve tareas completadas', () => {
+    expect(ids(searchTasks(tasks, 'viejo'))).toEqual([]);
+    expect(ids(searchTasks(tasks, 'camion'))).not.toContain('d');
   });
 
   it('varias palabras: todas deben aparecer, en cualquier orden', () => {
