@@ -13,7 +13,7 @@ const seed = {
 };
 
 describe('búsqueda de tareas', () => {
-  it('se abre desde el botón, encuentra sin importar acentos y marca las completadas', async () => {
+  it('se abre desde el botón, encuentra sin importar acentos y oculta las completadas', async () => {
     const user = userEvent.setup();
     renderApp(seed);
 
@@ -21,8 +21,9 @@ describe('búsqueda de tareas', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Buscar' });
     await user.type(within(dialog).getByRole('searchbox', { name: 'Buscar tareas' }), 'CAMION');
 
-    expect(within(dialog).getByRole('status')).toHaveTextContent('2 resultados');
-    expect(within(dialog).getByText('Completada')).toBeInTheDocument();
+    expect(within(dialog).getByRole('status')).toHaveTextContent('1 resultado');
+    expect(within(dialog).getByRole('button', { name: /Camión de mudanza/ })).toBeInTheDocument();
+    expect(within(dialog).queryByRole('button', { name: /Camión viejo/ })).toBeNull();
     expect(within(dialog).queryByText(/dentista/)).toBeNull();
   });
 
